@@ -14,7 +14,7 @@ const MODEL_CONFIGS = {
     'glm': {
         url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
         key: process.env.GLM_API_KEY,
-        model: 'glm-4-flash'
+        model: 'glm-4-flash-250414'
     },
     'qwen': {
         url: 'https://openrouter.ai/api/v1/chat/completions',
