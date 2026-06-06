@@ -19,7 +19,7 @@ const MODEL_CONFIGS = {
     'qwen': {
         url: 'https://openrouter.ai/api/v1/chat/completions',
         key: process.env.OPENROUTER_API_KEY,
-        model: 'qwen3.7-plus' 
+        model: 'qwen3.5-flash' 
     },
     'deepseek': {
         url: 'https://api.deepseek.com/chat/completions',
