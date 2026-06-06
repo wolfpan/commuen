@@ -9,11 +9,13 @@ body {
     color: #e0e0e0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     line-height: 1.6;
     padding: 2rem;
+    gap: 1.5rem;
 }
 
 .app-window {
@@ -262,12 +264,6 @@ select option {
     animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* 引擎底座栏样式 */
 .window-footer {
     height: 56px;
     display: flex;
@@ -292,38 +288,10 @@ select option {
     padding: 0.4rem 1.8rem 0.4rem 0.8rem;
     font-size: 0.8rem;
 }
-/* ==================== 1. 修改 body 样式 ==================== */
-body {
-    background-color: #000000;
-    color: #e0e0e0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    
-    display: flex;
-    flex-direction: column; /* 核心修改：改为垂直列排列，允许内容向下堆叠 */
-    justify-content: center;
-    align-items: center;
-    
-    min-height: 100vh;
-    line-height: 1.6;
-    padding: 2rem;
-    gap: 1.5rem; /* 新增：主界面框与下方文本之间的间距 */
-}
 
-/* ==================== 2. 还原并精简底座栏样式 ==================== */
-.window-footer {
-    height: 56px; /* 恢复原本的固定高度 */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* 恢复居中排列 */
-    background-color: #111312;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 0 2rem;
-}
-
-/* ==================== 3. 主界面框之外的全局页脚样式 ==================== */
 .app-description {
     font-size: 0.85rem;
-    color: #3a3d3b; /* 极深的灰色，比之前更暗，完美隐入纯黑背景 */
+    color: #3a3d3b;
     max-width: 620px;
     line-height: 1.6;
     text-align: center;
@@ -332,7 +300,89 @@ body {
     transition: color 0.3s;
 }
 
-/* 优雅的小细节：鼠标悬停时微微亮起，增加精致感 */
 .app-description:hover {
     color: #555555;
+}
+
+/* 访问密钥 (PIN) 遮罩样式 */
+.pin-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+.pin-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pin-box {
+    background-color: #0f1110;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    position: relative;
+    width: 320px;
+}
+
+.pin-box h2 {
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.pin-box p {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+}
+
+.pin-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+#pinInput {
+    width: 100%;
+    background-color: #151816;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #D4AF37;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    text-align: center;
+    outline: none;
+    letter-spacing: 4px;
+    transition: all 0.2s;
+    margin-bottom: 1rem;
+}
+
+#pinInput:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+}
+
+#pinInput:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+
+.pin-error {
+    color: #ff5f56;
+    font-size: 0.75rem;
+    min-height: 18px;
 }

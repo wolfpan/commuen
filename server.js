@@ -6,6 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
+// 从环境变量读取，如果未设置则写死一个默认值 (公网上线建议仅通过 .env 配置)
+const ACCESS_PIN = process.env.ACCESS_PIN || '8888';
+
 // 模型统一网关配置字典 (使用各大平台的 OpenAI 兼容接口)
 const MODEL_CONFIGS = {
     'glm': {
@@ -25,8 +28,24 @@ const MODEL_CONFIGS = {
     }
 };
 
+// 独立的 PIN 校验接口
+app.post('/api/verify', (req, res) => {
+    const { pin } = req.body;
+    if (pin === ACCESS_PIN) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ error: 'PIN 错误' });
+    }
+});
+
+// 核心重构接口
 app.post('/api/enhance', async (req, res) => {
-    const { userText, contextType, outputLang, modelChoice = 'glm' } = req.body;
+    const { userText, contextType, outputLang, modelChoice = 'glm', pin } = req.body;
+
+    // 核心拦截：PIN 鉴权
+    if (pin !== ACCESS_PIN) {
+        return res.status(401).json({ error: "鉴权失败：无效的访问密钥" });
+    }
 
     if (!userText) {
         return res.status(400).json({ error: "文本不能为空" });

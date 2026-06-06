@@ -7,6 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="pinOverlay" class="pin-overlay">
+        <div class="pin-box">
+            <h2>SYSTEM LOCKED</h2>
+            <p>请输入引擎访问密钥</p>
+            <input type="password" id="pinInput" placeholder="PIN" autocomplete="off">
+            <p id="pinError" class="pin-error"></p>
+        </div>
+    </div>
+
     <div class="app-window">
         <div class="window-header">
             <div class="mac-controls">
@@ -77,6 +86,11 @@
             </div>
         </div>
     </div>
+    
+    <div class="app-description">
+        核心引擎采用多模型并联架构，数据传输全程加密，输入内容不会用于任何模型训练。
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
