@@ -16,10 +16,10 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4-flash'
     },
-    'gemini': {
+    'qwen': {
         url: 'https://openrouter.ai/api/v1/chat/completions',
         key: process.env.OPENROUTER_API_KEY,
-        model: 'google/gemini-3.1-flash-lite' 
+        model: 'qwen3.7-plus' 
     },
     'deepseek': {
         url: 'https://api.deepseek.com/chat/completions',
