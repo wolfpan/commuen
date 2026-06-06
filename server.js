@@ -17,9 +17,9 @@ const MODEL_CONFIGS = {
         model: 'glm-4-flash'
     },
     'gemini': {
-        url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-        key: process.env.GEMINI_API_KEY,
-        model: 'gemini-3.1-flash-lite' 
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        key: process.env.OPENROUTER_API_KEY,
+        model: 'google/gemini-3.1-flash-lite' 
     },
     'deepseek': {
         url: 'https://api.deepseek.com/chat/completions',
