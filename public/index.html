@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沟通增强引擎 | MVP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-window">
+        <div class="window-header">
+            <div class="mac-controls">
+                <span class="mac-dot red"></span>
+                <span class="mac-dot yellow"></span>
+                <span class="mac-dot green"></span>
+            </div>
+            <div class="window-title">COMMUNICATION ENGINE</div>
+        </div>
+
+        <div class="workspace">
+            <div class="panel left-panel">
+                <div class="panel-header">
+                    <span class="dot">●</span> YOU TYPED
+                </div>
+                <textarea id="userInput" placeholder="输入需要重构的原始表达（支持中、英、中英混合）..."></textarea>
+                
+                <div class="panel-footer">
+                    <div class="select-group">
+                        <span class="group-label">场景</span>
+                        <select id="contextSelect">
+                            <option value="internal">内部协作</option>
+                            <option value="social">日常社交</option>
+                            <option value="business" selected>商业沟通</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button id="submitBtn">
+                重构
+                <span class="shortcut">(Cmd/Ctrl + Enter)</span>
+            </button>
+
+            <div class="panel right-panel">
+                <div class="panel-header gold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>SUGGESTS</span>
+                </div>
+                <div id="outputContent" class="output-content">
+                    <p id="suggestionText" class="suggestion-text empty-state">等待输入内容...</p>
+                    <div class="rationale-box">
+                        <span class="icon">💡</span>
+                        <span id="rationaleText">AI 策略洞察将在此处显示</span>
+                    </div>
+                </div>
+                
+                <div class="panel-footer">
+                    <div class="select-group">
+                        <span class="group-label">输出</span>
+                        <select id="outputLangSelect">
+                            <option value="zh" selected>中文</option>
+                            <option value="en">英文</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="window-footer">
+            <div class="select-group">
+                <span class="group-label">引擎内核 (ENGINE)</span>
+                <select id="modelSelect">
+                    <option value="glm" selected>GLM 4 Flash</option>
+                    <option value="gemini">Gemini 3.1 Flash lite</option>
+                    <option value="deepseek">DeepSeek V4 Flash</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

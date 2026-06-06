@@ -1,0 +1,294 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000000;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    line-height: 1.6;
+    padding: 2rem;
+}
+
+.app-window {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #0f1110;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.window-header {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #151816;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+.mac-controls {
+    position: absolute;
+    left: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.mac-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.mac-dot.red { background-color: #ff5f56; }
+.mac-dot.yellow { background-color: #ffbd2e; }
+.mac-dot.green { background-color: #27c93f; }
+
+.workspace {
+    display: flex;
+    position: relative;
+    min-height: 520px;
+}
+
+.panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.left-panel {
+    padding: 2.5rem 4.5rem 2.5rem 2.5rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.right-panel {
+    padding: 2.5rem 2.5rem 2.5rem 4.5rem;
+}
+
+.panel-header {
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.panel-header .dot {
+    font-size: 0.6rem;
+}
+
+.panel-header.gold {
+    color: #D4AF37;
+}
+
+textarea {
+    flex: 1;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: #e0e0e0;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    margin-bottom: 1rem;
+}
+
+textarea::placeholder {
+    color: #444;
+}
+
+.output-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.suggestion-text {
+    font-size: 1.25rem;
+    color: #D4AF37;
+    margin-bottom: 2rem;
+    white-space: pre-wrap;
+    flex: 1;
+}
+
+.suggestion-text.empty-state {
+    color: #444;
+}
+
+.rationale-box {
+    background-color: #151816;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #888;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.panel-footer {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+
+.select-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.group-label {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+select {
+    appearance: none;
+    background-color: #151816;
+    color: #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    transition: all 0.2s;
+}
+
+select:hover, select:focus {
+    border-color: #D4AF37;
+    background-color: #1a1d1b;
+}
+
+select option {
+    background-color: #151816;
+    color: #e0e0e0;
+}
+
+#submitBtn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    
+    width: 90px;
+    height: 90px;
+    padding: 8px;
+    border-radius: 10px;
+    
+    background-color: #0f1110; 
+    border: 1px solid rgba(255, 255, 255, 0.12); 
+    color: #D4AF37;
+    
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+#submitBtn .shortcut {
+    font-weight: 500;
+    font-size: 0.65rem;
+    opacity: 0.5;
+    color: #999;
+    letter-spacing: 0;
+    line-height: 1.2;
+}
+
+#submitBtn:hover {
+    background-color: #151816; 
+    border-color: #D4AF37;
+}
+
+#submitBtn:active {
+    background-color: rgba(212, 175, 55, 0.08);
+}
+
+#submitBtn:disabled {
+    background-color: #0f1110;
+    color: #444;
+    border-color: rgba(255, 255, 255, 0.04);
+    cursor: not-allowed;
+}
+
+#submitBtn.loading:disabled {
+    color: rgba(212, 175, 55, 0.8);
+    border-color: rgba(212, 175, 55, 0.25);
+    cursor: wait;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(212, 175, 55, 0.15);
+    border-top-color: #D4AF37;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 引擎底座栏样式 */
+.window-footer {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #111312;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0 2rem;
+}
+
+.window-footer .select-group {
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.window-footer .select-group:hover {
+    opacity: 1;
+}
+
+.window-footer select {
+    background-color: #0f1110;
+    padding: 0.4rem 1.8rem 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
