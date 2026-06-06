@@ -90,18 +90,19 @@ Assistant: {
 
 当前任务参数：
 - 场景设定：${currentConfig.description}
-- 语言路径：${targetLang}
+- 语言路径：🚨 ${targetLang}
 
 严格执行以下场景专属约束：
 ${currentConfig.rules}
 4. 绝对忠实（Anti-Hallucination）：严禁凭空捏造原文没有的时间（如 next week）、地点、业务细节或多余的具体行动指令。
 
 【场景专属范例参考】
+(注：以下范例仅供语感参考，最终输出的语言请严格遵循上方“语言路径”的要求)
 ${currentConfig.example}
 
 强制返回 JSON 格式：
 {
-  "suggestion": "润色后的最终文案（严格对齐当前场景的语感与范例水准）",
+  "suggestion": "润色后的最终文案（⚠️ 必须严格使用【语言路径】要求的语言输出，无视范例中的语言差异）",
   "rationale": "用一句极简中文，点明该改写如何优化了句流或心理体验"
 }`;
 
@@ -109,7 +110,10 @@ ${currentConfig.example}
         model: config.model,
         messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: userText }
+            { 
+              role: "user", 
+              content: `请严格按照系统设定的场景和规则，重写以下这段话：\n\n"""\n${userText}\n"""` 
+            }
         ],
         response_format: { type: "json_object" },
         temperature: 0.7 
@@ -136,7 +140,7 @@ ${currentConfig.example}
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`MVP 引擎已启动: http://localhost:${PORT}`);
 });
