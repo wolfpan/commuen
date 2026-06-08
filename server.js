@@ -19,7 +19,7 @@ const MODEL_CONFIGS = {
     'qwen': {
         url: 'https://dashscope-us.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
-        model: 'qwen/qwen3.5-flash' 
+        model: 'qwen3.5-flash' 
     },
     'deepseek': {
         url: 'https://api.deepseek.com/chat/completions',
