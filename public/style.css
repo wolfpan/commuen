@@ -388,7 +388,7 @@ select option {
 }
 
 /* =========================================
-   响应式布局：适配移动端、平板及窄竖屏
+   响应式布局：适配移动端、平板及窄竖屏 (终极优化版)
    ========================================= */
 
 @media (max-width: 900px) {
@@ -397,7 +397,6 @@ select option {
     }
 
     .app-window {
-        /* 避免在小屏幕上过于拥挤 */
         box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
@@ -405,29 +404,60 @@ select option {
     .workspace {
         flex-direction: column;
         min-height: auto;
+        /* 【关键空间预留】：为底部并排的菜单强行腾出 4.5rem 的安全物理高度，避免文字重叠 */
+        padding-bottom: 4.5rem; 
     }
 
-    /* 上半部分（原左侧栏） */
+    /* 上半部分（原左侧栏）：移除底部空间，让输入框紧贴中轴分割线 */
     .left-panel {
-        padding: 1.5rem 1.5rem 3rem 1.5rem;
+        padding: 1.5rem 1.5rem 2.5rem 1.5rem;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        min-height: 280px;
+        min-height: 240px;
+        /* 必须显式设置为 static，让内部绝对定位的子菜单跨过面板，直接向 workspace 锚定 */
+        position: static; 
     }
 
     /* 下半部分（原右侧栏） */
     .right-panel {
         padding: 3rem 1.5rem 1.5rem 1.5rem;
-        min-height: 280px;
+        min-height: 240px;
+        position: static;
     }
 
-    /* 重构按钮位置：精确卡在上下两个面板的分割线上 */
+    /* 【核心折叠魔法】：将原本分散的 footer 强行并排吸附在 workspace 的最底部 */
+    .left-panel .panel-footer,
+    .right-panel .panel-footer {
+        position: absolute;
+        bottom: 0;
+        width: 50%;
+        height: 4.5rem;
+        padding: 0;
+        margin: 0;
+        /* 覆盖原有的顶部边框，形成统一底栏视觉 */
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 左侧“场景”菜单铺满左下角，并补充一条竖向的中央分割线 */
+    .left-panel .panel-footer {
+        left: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* 右侧“输出”菜单铺满右下角 */
+    .right-panel .panel-footer {
+        right: 0;
+    }
+
+    /* 重构按钮位置：精确卡在上下两个面板的物理中轴线上，不再受菜单干扰 */
     #submitBtn {
         position: relative;
         top: auto;
         left: auto;
         transform: none;
-        /* 高度 90px，上下各负 45px 即可实现完美跨界重叠 */
         margin: -45px auto;
         z-index: 10;
     }
@@ -437,7 +467,7 @@ select option {
     }
 }
 
-/* 针对更小的手机屏幕（如 iPhone）的极致优化 */
+/* 针对更小的手机屏幕（如 375px 极窄屏幕）的视觉压缩 */
 @media (max-width: 480px) {
     .window-footer {
         height: auto;
@@ -450,22 +480,25 @@ select option {
         align-items: center;
     }
 
-    .panel-footer .select-group {
-        flex-direction: column;
+    /* 极限空间下，收紧底部双菜单的呼吸感，防止文字被挤兑折行 */
+    .select-group {
         gap: 0.5rem;
     }
+    
+    .group-label {
+        font-size: 0.65rem; 
+    }
 
-    /* 优化移动端打字手感，防止文字过小或边距过大 */
+    select {
+        padding: 0.4rem 1.5rem 0.4rem 0.5rem; 
+        font-size: 0.8rem;
+    }
+
     textarea {
         font-size: 1rem;
     }
     
     .suggestion-text {
         font-size: 1.1rem;
-    }
-
-    #pinInput {
-        letter-spacing: 2px;
-        font-size: 1rem;
     }
 }
