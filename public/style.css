@@ -425,17 +425,19 @@ select option {
 }
 
 /* =========================================
-   响应式布局：移动端全屏沉浸原生体验 (Native App Feel)
+   响应式布局：移动端全屏沉浸原生体验 (极限空间利用版)
    ========================================= */
 
 @media (max-width: 900px) {
-    /* 1. 锁死基础视图，禁止整体滑动，去除留白 */
-    body {
+    /* 1. 锁死基础视图，彻底覆盖 PC 端的 Flex 居中，强制从头铺到尾 */
+    html, body {
+        height: 100dvh;
+        width: 100vw;
+        margin: 0;
         padding: 0;
-        gap: 0;
-        height: 100dvh; /* 使用 dvh 完美适配移动端浏览器的地址栏缩放 */
         overflow: hidden;
-        background-color: #0f1110; 
+        display: block; /* 关键：覆盖 flex，防止上下留白 */
+        background-color: #0f1110;
     }
 
     /* 2. 容器满血展开：去掉圆角、阴影和边框，100% 填满屏幕 */
@@ -443,33 +445,32 @@ select option {
         box-shadow: none;
         border-radius: 0;
         border: none;
-        height: 100dvh; 
-        width: 100vw;
-        max-width: 100%;
+        height: 100%; 
+        width: 100%;
         display: flex;
         flex-direction: column;
     }
 
-    /* 隐藏底部外侧的免责说明文字，为全屏界面让路 */
     .app-description {
         display: none;
     }
 
-    /* 3. 核心工作区：自适应撑满剩余高度 */
+    /* 3. 核心工作区：强行拉伸填满中间的所有剩余空间 */
     .workspace {
+        flex: 1 1 auto; 
+        min-height: 0; 
+        display: flex;
         flex-direction: column;
-        flex: 1; 
-        min-height: 0; /* 关键：解决 flex 嵌套导致内容撑破屏幕的问题 */
-        padding-bottom: 4.5rem; /* 为底部菜单预留空间 */
+        padding-bottom: 4rem; /* 底部双菜单预留空间，微微缩减 */
         position: relative;
     }
 
-    /* 4. 上下两块面板：均分空间，支持内部独立滚动 */
+    /* 4. 上下两块面板：极致压榨内边距，严格平分空间 */
     .left-panel {
-        padding: 1.2rem 1.2rem 2.5rem 1.2rem;
+        padding: 1rem 1rem 1.8rem 1rem;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        flex: 1; /* 占据 50% 可用高度 */
+        flex: 1 1 50%; /* 严格均分上下屏幕 */
         min-height: 0; 
         position: static; 
         display: flex;
@@ -477,28 +478,35 @@ select option {
     }
 
     .right-panel {
-        padding: 2.5rem 1.2rem 1.2rem 1.2rem;
-        flex: 1; /* 占据 50% 可用高度 */
+        padding: 2.2rem 1rem 0.5rem 1rem;
+        flex: 1 1 50%; /* 严格均分上下屏幕 */
         min-height: 0;
         position: static;
         display: flex;
         flex-direction: column;
     }
 
-    /* 让输入输出区域在受限空间内独立滚动，并隐藏滚动条的突兀感 */
-    textarea, .output-content {
-        overflow-y: auto;
-        flex: 1;
-        min-height: 0;
+    /* 缩小标题与内容的间距，给打字区让位 */
+    .panel-header {
+        margin-bottom: 0.8rem;
     }
 
-    /* 5. 底部场景/输出菜单吸附魔法：底色填充防透底 */
+    /* 让输入输出区域在受限空间内独立滚动，彻底撑满面板 */
+    textarea, .output-content {
+        overflow-y: auto;
+        flex: 1 1 auto;
+        min-height: 0;
+        height: 100%;
+        margin-bottom: 0; /* 移除多余的底边距 */
+    }
+
+    /* 5. 底部场景/输出菜单：压缩高度至 4rem，更紧凑 */
     .left-panel .panel-footer,
     .right-panel .panel-footer {
         position: absolute;
         bottom: 0;
         width: 50%;
-        height: 4.5rem;
+        height: 4rem;
         padding: 0;
         margin: 0;
         border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -518,35 +526,37 @@ select option {
         right: 0;
     }
 
-    /* 6. 重构按钮绝对居中：完美卡在上下布局的物理分割线上 */
+    /* 6. 重构按钮绝对居中：重新计算中心点 */
     #submitBtn {
         position: absolute;
-        /* 精确计算：(100%总高 - 4.5rem菜单高) 的中点 */
-        top: calc((100% - 4.5rem) / 2); 
+        top: calc((100% - 4rem) / 2); 
         left: 50%;
         transform: translate(-50%, -50%);
         margin: 0;
         z-index: 10;
+        /* 稍微缩小一点按钮，避免侵占过多文本空间 */
+        width: 80px;
+        height: 80px;
     }
 
-    /* 引擎选择栏保持在最底部 */
+    /* 7. 底部引擎选择：完美适配 iPhone 底部安全区 (Home Indicator) */
     .window-footer {
-        padding: 0 1rem;
+        /* 使用 env() 动态读取 iPhone 底部安全区高度，彻底消除黑边 */
+        padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom));
         flex-shrink: 0;
+        background-color: #111312;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        height: auto;
     }
 }
 
-/* 针对更小的手机屏幕（如 iPhone SE 等极窄屏幕）的视觉压缩 */
+/* 针对更小的手机屏幕的视觉压缩 */
 @media (max-width: 480px) {
-    .window-footer {
-        height: auto;
-        padding: 0.8rem 1rem;
-    }
-    
     .window-footer .select-group {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: center;
+        /* 将纵向排列改回横向排列，并把文字和下拉框分列左右，极限节省高度 */
+        flex-direction: row; 
+        justify-content: space-between;
+        width: 100%;
     }
 
     .select-group {
@@ -558,15 +568,21 @@ select option {
     }
 
     select {
-        padding: 0.4rem 1.5rem 0.4rem 0.5rem; 
+        padding: 0.3rem 1.2rem 0.3rem 0.5rem; 
         font-size: 0.8rem;
     }
 
     textarea {
-        font-size: 1rem;
+        font-size: 1.05rem;
     }
     
     .suggestion-text {
-        font-size: 1rem;
+        font-size: 1.05rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* 缩小 rationale-box 的内边距 */
+    .rationale-box {
+        padding: 0.8rem 1rem;
     }
 }
