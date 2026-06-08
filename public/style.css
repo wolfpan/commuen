@@ -386,3 +386,86 @@ select option {
     font-size: 0.75rem;
     min-height: 18px;
 }
+
+/* =========================================
+   响应式布局：适配移动端、平板及窄竖屏
+   ========================================= */
+
+@media (max-width: 900px) {
+    body {
+        padding: 1rem;
+    }
+
+    .app-window {
+        /* 避免在小屏幕上过于拥挤 */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    /* 核心工作区：由左右结构改为上下结构 */
+    .workspace {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    /* 上半部分（原左侧栏） */
+    .left-panel {
+        padding: 1.5rem 1.5rem 3rem 1.5rem;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        min-height: 280px;
+    }
+
+    /* 下半部分（原右侧栏） */
+    .right-panel {
+        padding: 3rem 1.5rem 1.5rem 1.5rem;
+        min-height: 280px;
+    }
+
+    /* 重构按钮位置：精确卡在上下两个面板的分割线上 */
+    #submitBtn {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        /* 高度 90px，上下各负 45px 即可实现完美跨界重叠 */
+        margin: -45px auto;
+        z-index: 10;
+    }
+
+    .window-footer {
+        padding: 0 1rem;
+    }
+}
+
+/* 针对更小的手机屏幕（如 iPhone）的极致优化 */
+@media (max-width: 480px) {
+    .window-footer {
+        height: auto;
+        padding: 1rem;
+    }
+    
+    .window-footer .select-group {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .panel-footer .select-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* 优化移动端打字手感，防止文字过小或边距过大 */
+    textarea {
+        font-size: 1rem;
+    }
+    
+    .suggestion-text {
+        font-size: 1.1rem;
+    }
+
+    #pinInput {
+        letter-spacing: 2px;
+        font-size: 1rem;
+    }
+}
