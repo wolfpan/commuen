@@ -17,9 +17,9 @@ const MODEL_CONFIGS = {
         model: 'glm-4-flash-250414'
     },
     'qwen': {
-        url: 'https://openrouter.ai/api/v1/chat/completions',
-        key: process.env.OPENROUTER_API_KEY,
-        model: 'qwen/qwen3.5-flash-02-23' 
+        url: 'https://dashscope-us.aliyuncs.com/compatible-mode/v1/chat/completions',
+        key: process.env.Ali_API_KEY,
+        model: 'qwen/qwen3.5-flash' 
     },
     'deepseek': {
         url: 'https://api.deepseek.com/chat/completions',
