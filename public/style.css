@@ -425,44 +425,74 @@ select option {
 }
 
 /* =========================================
-   响应式布局：适配移动端、平板及窄竖屏 (终极优化版)
+   响应式布局：移动端全屏沉浸原生体验 (Native App Feel)
    ========================================= */
 
 @media (max-width: 900px) {
+    /* 1. 锁死基础视图，禁止整体滑动，去除留白 */
     body {
-        padding: 1rem;
+        padding: 0;
+        gap: 0;
+        height: 100dvh; /* 使用 dvh 完美适配移动端浏览器的地址栏缩放 */
+        overflow: hidden;
+        background-color: #0f1110; 
     }
 
+    /* 2. 容器满血展开：去掉圆角、阴影和边框，100% 填满屏幕 */
     .app-window {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        box-shadow: none;
+        border-radius: 0;
+        border: none;
+        height: 100dvh; 
+        width: 100vw;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
-    /* 核心工作区：由左右结构改为上下结构 */
+    /* 隐藏底部外侧的免责说明文字，为全屏界面让路 */
+    .app-description {
+        display: none;
+    }
+
+    /* 3. 核心工作区：自适应撑满剩余高度 */
     .workspace {
         flex-direction: column;
-        min-height: auto;
-        /* 【关键空间预留】：为底部并排的菜单强行腾出 4.5rem 的安全物理高度，避免文字重叠 */
-        padding-bottom: 4.5rem; 
+        flex: 1; 
+        min-height: 0; /* 关键：解决 flex 嵌套导致内容撑破屏幕的问题 */
+        padding-bottom: 4.5rem; /* 为底部菜单预留空间 */
+        position: relative;
     }
 
-    /* 上半部分（原左侧栏）：移除底部空间，让输入框紧贴中轴分割线 */
+    /* 4. 上下两块面板：均分空间，支持内部独立滚动 */
     .left-panel {
-        padding: 1.5rem 1.5rem 2.5rem 1.5rem;
+        padding: 1.2rem 1.2rem 2.5rem 1.2rem;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        min-height: 240px;
-        /* 必须显式设置为 static，让内部绝对定位的子菜单跨过面板，直接向 workspace 锚定 */
+        flex: 1; /* 占据 50% 可用高度 */
+        min-height: 0; 
         position: static; 
+        display: flex;
+        flex-direction: column;
     }
 
-    /* 下半部分（原右侧栏） */
     .right-panel {
-        padding: 3rem 1.5rem 1.5rem 1.5rem;
-        min-height: 240px;
+        padding: 2.5rem 1.2rem 1.2rem 1.2rem;
+        flex: 1; /* 占据 50% 可用高度 */
+        min-height: 0;
         position: static;
+        display: flex;
+        flex-direction: column;
     }
 
-    /* 【核心折叠魔法】：将原本分散的 footer 强行并排吸附在 workspace 的最底部 */
+    /* 让输入输出区域在受限空间内独立滚动，并隐藏滚动条的突兀感 */
+    textarea, .output-content {
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+    }
+
+    /* 5. 底部场景/输出菜单吸附魔法：底色填充防透底 */
     .left-panel .panel-footer,
     .right-panel .panel-footer {
         position: absolute;
@@ -471,44 +501,46 @@ select option {
         height: 4.5rem;
         padding: 0;
         margin: 0;
-        /* 覆盖原有的顶部边框，形成统一底栏视觉 */
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: #0f1110; 
+        z-index: 5;
     }
 
-    /* 左侧“场景”菜单铺满左下角，并补充一条竖向的中央分割线 */
     .left-panel .panel-footer {
         left: 0;
         border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* 右侧“输出”菜单铺满右下角 */
     .right-panel .panel-footer {
         right: 0;
     }
 
-    /* 重构按钮位置：精确卡在上下两个面板的物理中轴线上，不再受菜单干扰 */
+    /* 6. 重构按钮绝对居中：完美卡在上下布局的物理分割线上 */
     #submitBtn {
-        position: relative;
-        top: auto;
-        left: auto;
-        transform: none;
-        margin: -45px auto;
+        position: absolute;
+        /* 精确计算：(100%总高 - 4.5rem菜单高) 的中点 */
+        top: calc((100% - 4.5rem) / 2); 
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
         z-index: 10;
     }
 
+    /* 引擎选择栏保持在最底部 */
     .window-footer {
         padding: 0 1rem;
+        flex-shrink: 0;
     }
 }
 
-/* 针对更小的手机屏幕（如 375px 极窄屏幕）的视觉压缩 */
+/* 针对更小的手机屏幕（如 iPhone SE 等极窄屏幕）的视觉压缩 */
 @media (max-width: 480px) {
     .window-footer {
         height: auto;
-        padding: 1rem;
+        padding: 0.8rem 1rem;
     }
     
     .window-footer .select-group {
@@ -517,7 +549,6 @@ select option {
         align-items: center;
     }
 
-    /* 极限空间下，收紧底部双菜单的呼吸感，防止文字被挤兑折行 */
     .select-group {
         gap: 0.5rem;
     }
@@ -536,6 +567,6 @@ select option {
     }
     
     .suggestion-text {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 }
