@@ -1,9 +1,9 @@
+/* style.css */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
 
 /* =========================================
    全局滚动条样式重塑 (暗黑极简风格)
@@ -121,8 +121,14 @@ body {
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
     color: #666;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .panel-header .dot {
@@ -131,6 +137,42 @@ body {
 
 .panel-header.gold {
     color: #D4AF37;
+}
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #888;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+.panel-header.gold .icon-btn {
+    color: rgba(212, 175, 55, 0.6);
+    border-color: rgba(212, 175, 55, 0.2);
+}
+
+.panel-header.gold .icon-btn:hover {
+    color: #D4AF37;
+    background: rgba(212, 175, 55, 0.08);
+    border-color: rgba(212, 175, 55, 0.4);
 }
 
 textarea {
@@ -429,16 +471,14 @@ select option {
    ========================================= */
 
 @media (max-width: 900px) {
-    /* 1. 锁死基础视图，禁止整体滑动，去除留白 */
     body {
         padding: 0;
         gap: 0;
-        height: 100dvh; /* 使用 dvh 完美适配移动端浏览器的地址栏缩放 */
+        height: 100dvh; 
         overflow: hidden;
         background-color: #0f1110; 
     }
 
-    /* 2. 容器满血展开：去掉圆角、阴影和边框，100% 填满屏幕 */
     .app-window {
         box-shadow: none;
         border-radius: 0;
@@ -450,26 +490,23 @@ select option {
         flex-direction: column;
     }
 
-    /* 隐藏底部外侧的免责说明文字，为全屏界面让路 */
     .app-description {
         display: none;
     }
 
-    /* 3. 核心工作区：自适应撑满剩余高度 */
     .workspace {
         flex-direction: column;
         flex: 1; 
-        min-height: 0; /* 关键：解决 flex 嵌套导致内容撑破屏幕的问题 */
-        padding-bottom: 4.5rem; /* 为底部菜单预留空间 */
+        min-height: 0; 
+        padding-bottom: 4.5rem; 
         position: relative;
     }
 
-    /* 4. 上下两块面板：均分空间，支持内部独立滚动 */
     .left-panel {
         padding: 1.2rem 1.2rem 2.5rem 1.2rem;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        flex: 1; /* 占据 50% 可用高度 */
+        flex: 1; 
         min-height: 0; 
         position: static; 
         display: flex;
@@ -478,21 +515,19 @@ select option {
 
     .right-panel {
         padding: 2.5rem 1.2rem 1.2rem 1.2rem;
-        flex: 1; /* 占据 50% 可用高度 */
+        flex: 1; 
         min-height: 0;
         position: static;
         display: flex;
         flex-direction: column;
     }
 
-    /* 让输入输出区域在受限空间内独立滚动，并隐藏滚动条的突兀感 */
     textarea, .output-content {
         overflow-y: auto;
         flex: 1;
         min-height: 0;
     }
 
-    /* 5. 底部场景/输出菜单吸附魔法：底色填充防透底 */
     .left-panel .panel-footer,
     .right-panel .panel-footer {
         position: absolute;
@@ -518,10 +553,8 @@ select option {
         right: 0;
     }
 
-    /* 6. 重构按钮绝对居中：完美卡在上下布局的物理分割线上 */
     #submitBtn {
         position: absolute;
-        /* 精确计算：(100%总高 - 4.5rem菜单高) 的中点 */
         top: calc((100% - 4.5rem) / 2); 
         left: 50%;
         transform: translate(-50%, -50%);
@@ -529,14 +562,12 @@ select option {
         z-index: 10;
     }
 
-    /* 引擎选择栏保持在最底部 */
     .window-footer {
         padding: 0 1rem;
         flex-shrink: 0;
     }
 }
 
-/* 针对更小的手机屏幕（如 iPhone SE 等极窄屏幕）的视觉压缩 */
 @media (max-width: 480px) {
     .window-footer {
         height: auto;

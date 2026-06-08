@@ -1,9 +1,14 @@
+// app.js
 document.addEventListener('DOMContentLoaded', () => {
     // 基础节点获取
     const userInput = document.getElementById('userInput');
     const submitBtn = document.getElementById('submitBtn');
     const suggestionText = document.getElementById('suggestionText');
     const rationaleText = document.getElementById('rationaleText');
+
+    // 新增粘贴与复制节点
+    const pasteBtn = document.getElementById('pasteBtn');
+    const copyBtn = document.getElementById('copyBtn');
 
     // PIN 系统节点获取
     const pinOverlay = document.getElementById('pinOverlay');
@@ -23,6 +28,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // 绑定 PIN 事件
     pinInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') verifyPin(pinInput.value.trim());
+    });
+
+    // 绑定粘贴事件
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                userInput.value = text;
+                userInput.focus();
+            }
+        } catch (err) {
+            console.error('粘贴失败: ', err);
+            alert('无法读取剪贴板，请检查浏览器权限。');
+        }
+    });
+
+    // 绑定复制事件
+    copyBtn.addEventListener('click', async () => {
+        const textToCopy = suggestionText.textContent;
+        if (!textToCopy || textToCopy === '等待输入内容...' || suggestionText.classList.contains('empty-state')) {
+            return;
+        }
+        
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            
+            // 复制成功的视觉反馈 (呈现绿色高光及勾选图标)
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#27c93f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            copyBtn.style.borderColor = "rgba(39, 201, 63, 0.4)";
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHTML;
+                copyBtn.style.borderColor = "";
+            }, 2000);
+        } catch (err) {
+            console.error('复制失败: ', err);
+        }
     });
 
     // 绑定主请求事件
