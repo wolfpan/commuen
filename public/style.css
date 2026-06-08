@@ -77,22 +77,6 @@ body {
     position: relative;
 }
 
-.mac-controls {
-    position: absolute;
-    left: 16px;
-    display: flex;
-    gap: 8px;
-}
-
-.mac-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-.mac-dot.red { background-color: #ff5f56; }
-.mac-dot.yellow { background-color: #ffbd2e; }
-.mac-dot.green { background-color: #27c93f; }
-
 .workspace {
     display: flex;
     position: relative;
