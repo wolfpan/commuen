@@ -1,34 +1,160 @@
 // app.js
 document.addEventListener('DOMContentLoaded', () => {
-    // 基础节点获取
+    // =========================================
+    // 1. 初始化 Supabase 客户端
+    // =========================================
+    // ⚠️ 请在此处填入你自己的 Supabase 项目 URL 和 Anon Key
+    const SUPABASE_URL = 'https://ocanypotivoveuoezcax.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYW55cG90aXZvdmV1b2V6Y2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5Njk1NDQsImV4cCI6MjA5NjU0NTU0NH0.Qygz7W4S0hgP4qvuApvj8oB7Q60GFY0f8GWXAedQtGE';
+    
+    // 由于我们在 index.html 引入了 CDN，所以全局有 supabase 对象
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // =========================================
+    // 2. 基础 DOM 节点获取
+    // =========================================
     const userInput = document.getElementById('userInput');
     const submitBtn = document.getElementById('submitBtn');
     const suggestionText = document.getElementById('suggestionText');
     const rationaleText = document.getElementById('rationaleText');
-
-    // 新增粘贴与复制节点
     const pasteBtn = document.getElementById('pasteBtn');
     const copyBtn = document.getElementById('copyBtn');
+    const modelSelect = document.getElementById('modelSelect');
 
-    // PIN 系统节点获取
-    const pinOverlay = document.getElementById('pinOverlay');
-    const pinInput = document.getElementById('pinInput');
-    const pinError = document.getElementById('pinError');
+    // =========================================
+    // 3. Auth 弹窗节点获取
+    // =========================================
+    const authOverlay = document.getElementById('authOverlay');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const guestBtn = document.getElementById('guestBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const authError = document.getElementById('authError');
 
-    // 初始化全局状态
-    let currentPin = localStorage.getItem('app_pin') || '';
+    // 全局凭证状态
+    let sessionToken = null;
 
-    // 页面加载时自动验证本地 PIN
-    if (currentPin) {
-        verifyPin(currentPin, true);
-    } else {
-        pinInput.focus();
+    // =========================================
+    // 4. Supabase 状态机驱动 (核心权限控制)
+    // =========================================
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session) {
+            // ----- 登录状态 -----
+            sessionToken = session.access_token;
+            logoutBtn.style.display = 'flex';
+            hideAuthOverlay();
+            
+            // 释放所有模型选择权，并去除下拉框中的“(需登录)”字样
+            Array.from(modelSelect.options).forEach(opt => {
+                opt.disabled = false;
+                opt.textContent = opt.textContent.replace(' (需登录)', '');
+            });
+        } else {
+            // ----- 未登录/登出/游客状态 -----
+            sessionToken = null;
+            logoutBtn.style.display = 'none';
+            
+            // 强制将模型回滚至默认的 GLM 4
+            modelSelect.value = 'glm';
+            
+            // 禁用高级模型，并补充“(需登录)”提示
+            Array.from(modelSelect.options).forEach(opt => {
+                if (opt.value !== 'glm') {
+                    opt.disabled = true;
+                    if (!opt.textContent.includes('(需登录)')) {
+                        opt.textContent += ' (需登录)';
+                    }
+                }
+            });
+        }
+    });
+
+    // =========================================
+    // 5. 身份验证事件绑定
+    // =========================================
+    
+    // 登录
+    loginBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        if (!email || !password) return showAuthError('请输入邮箱和密码');
+
+        toggleAuthLoading(true);
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        
+        if (error) showAuthError(error.message);
+        toggleAuthLoading(false);
+    });
+
+    // 注册
+    signupBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        if (!email || !password) return showAuthError('请输入邮箱和密码');
+
+        toggleAuthLoading(true);
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        
+        if (error) {
+            showAuthError(error.message);
+        } else {
+            showAuthError('注册成功！请查收验证邮件（或直接点击登录）。');
+        }
+        toggleAuthLoading(false);
+    });
+
+    // 游客免登录进场
+    guestBtn.addEventListener('click', () => {
+        hideAuthOverlay();
+    });
+
+    // 登出
+    logoutBtn.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        showAuthOverlay();
+    });
+
+    // 密码框回车快捷登录
+    passwordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') loginBtn.click();
+    });
+
+    // Auth 相关的 UI 辅助函数
+    function showAuthError(msg) {
+        authError.textContent = msg;
+        setTimeout(() => authError.textContent = '', 4000);
     }
 
-    // 绑定 PIN 事件
-    pinInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') verifyPin(pinInput.value.trim());
-    });
+    function toggleAuthLoading(isLoading) {
+        loginBtn.disabled = isLoading;
+        signupBtn.disabled = isLoading;
+        emailInput.disabled = isLoading;
+        passwordInput.disabled = isLoading;
+        loginBtn.textContent = isLoading ? '验证中...' : '登录';
+    }
+
+    function hideAuthOverlay() {
+        authOverlay.classList.add('hidden');
+        setTimeout(() => {
+            authOverlay.style.display = 'none';
+            userInput.focus();
+        }, 300);
+    }
+
+    function showAuthOverlay() {
+        authOverlay.style.display = 'flex';
+        // 触发重绘，确保过渡动画生效
+        void authOverlay.offsetWidth;
+        authOverlay.classList.remove('hidden');
+        emailInput.focus();
+    }
+
+
+    // =========================================
+    // 6. 核心业务逻辑 (粘贴、复制、提交重构)
+    // =========================================
 
     // 绑定粘贴事件
     pasteBtn.addEventListener('click', async () => {
@@ -74,60 +200,19 @@ document.addEventListener('DOMContentLoaded', () => {
             submitRequest();
         }
     });
+    
     submitBtn.addEventListener('click', submitRequest);
 
-    // 独立的 PIN 验证函数
-    async function verifyPin(pin, isAuto = false) {
-        if (!pin) return;
-        
-        // 验证中状态：锁定输入框，避免重复回车
-        pinInput.disabled = true;
-        const originalPlaceholder = pinInput.placeholder;
-        pinInput.placeholder = "VERIFYING...";
-
-        try {
-            const res = await fetch('/api/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pin })
-            });
-            
-            if (res.ok) {
-                currentPin = pin;
-                localStorage.setItem('app_pin', pin);
-                pinOverlay.classList.add('hidden');
-                setTimeout(() => pinOverlay.style.display = 'none', 300);
-                userInput.focus();
-            } else {
-                throw new Error('鉴权失败');
-            }
-        } catch (error) {
-            if (!isAuto) {
-                pinError.textContent = '无效的访问密钥';
-                pinInput.value = '';
-                setTimeout(() => pinError.textContent = '', 2000);
-            } else {
-                localStorage.removeItem('app_pin');
-            }
-        } finally {
-            // 恢复初始状态
-            pinInput.disabled = false;
-            pinInput.placeholder = originalPlaceholder;
-            // 如果还在验证页面，让焦点回到输入框
-            if (pinOverlay.style.display !== 'none' && !pinOverlay.classList.contains('hidden')) {
-                pinInput.focus();
-            }
-        }
-    }
-
+    // 发送重构请求
     async function submitRequest() {
         const text = userInput.value.trim();
         if (!text) return;
 
         const contextType = document.getElementById('contextSelect').value;
         const outputLang = document.getElementById('outputLangSelect').value;
-        const modelChoice = document.getElementById('modelSelect').value; 
+        const modelChoice = modelSelect.value; 
 
+        // 设置 Loading 状态
         submitBtn.disabled = true;
         submitBtn.classList.add('loading');
         submitBtn.innerHTML = `
@@ -140,35 +225,37 @@ document.addEventListener('DOMContentLoaded', () => {
         rationaleText.textContent = '推演最佳重构策略中...';
 
         try {
+            // 动态组装请求头
+            const headers = { 'Content-Type': 'application/json' };
+            if (sessionToken) {
+                headers['Authorization'] = `Bearer ${sessionToken}`; // 附带身份凭证
+            }
+
             const response = await fetch('/api/enhance', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 body: JSON.stringify({ 
                     userText: text, 
                     contextType: contextType,
                     outputLang: outputLang,
-                    modelChoice: modelChoice,
-                    pin: currentPin // 附加上下文中的密钥
+                    modelChoice: modelChoice
                 })
             });
 
-            // 拦截后端返回的 401，唤醒重登录机制
+            // 拦截后端返回的 401（可能是 JWT 过期，或游客恶意调用受限模型）
             if (response.status === 401) {
-                localStorage.removeItem('app_pin');
-                pinOverlay.style.display = 'flex';
-                // 强制重绘后再移除 hidden
-                void pinOverlay.offsetWidth;
-                pinOverlay.classList.remove('hidden');
-                throw new Error('会话过期或密钥已更改，请重新验证');
+                showAuthOverlay();
+                throw new Error('会话过期或需登录解锁该模型，请重新验证。');
             }
 
             if (!response.ok) throw new Error('网络请求失败');
 
             const data = await response.json();
 
+            // 渲染结果
             suggestionText.textContent = data.suggestion;
             
-            // 核心变动：如果选择了自动检测模式，且后端返回了 detectedContext，则渲染路由徽章
+            // 渲染智能路由徽章
             if (contextType === 'auto' && data.detectedContext) {
                 rationaleText.innerHTML = `<span class="route-badge">智能路由: ${data.detectedContext}</span> ${data.rationale}`;
             } else {
@@ -178,13 +265,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
             suggestionText.textContent = '重构失败。';
-            rationaleText.textContent = error.message.includes('会话') 
-                ? '错误：鉴权失败。' 
-                : '错误：API 响应异常。请检查后端日志或重试。';
+            rationaleText.textContent = `错误：${error.message}`;
         } finally {
+            // 恢复按钮状态
             submitBtn.disabled = false;
             submitBtn.classList.remove('loading');
             submitBtn.innerHTML = `重构 <span class="shortcut">(Cmd/Ctrl + Enter)</span>`;
         }
     }
-}); 
+});

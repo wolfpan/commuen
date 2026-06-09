@@ -617,3 +617,80 @@ select option {
         font-size: 1rem;
     }
 } 
+
+
+/* 新增 Auth 组件样式 */
+.auth-field {
+    width: 100%;
+    background-color: #151816;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+    margin-bottom: 0.75rem;
+}
+
+.auth-field:focus {
+    border-color: #D4AF37;
+}
+
+.auth-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+}
+
+.auth-primary-btn, .auth-secondary-btn {
+    flex: 1;
+    padding: 0.65rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.auth-primary-btn {
+    background-color: #D4AF37;
+    border: 1px solid #D4AF37;
+    color: #000;
+}
+
+.auth-primary-btn:hover {
+    background-color: #f1c43f;
+}
+
+.auth-secondary-btn {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e0e0e0;
+}
+
+.auth-secondary-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.auth-guest-link {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.auth-guest-link:hover {
+    color: #888;
+}
+
+/* 优化被禁止选择的下拉菜单选项样式 */
+select option:disabled {
+    color: #444;
+    background-color: #0f1110;
+}

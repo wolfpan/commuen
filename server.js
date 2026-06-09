@@ -1,15 +1,19 @@
 const express = require('express');
 const axios = require('axios');
+const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-// 从环境变量读取，如果未设置则写死一个默认值 (公网上线建议仅通过 .env 配置)
-const ACCESS_PIN = process.env.ACCESS_PIN || '8888';
+// 初始化 Supabase 客户端，用于后端验证 JWT 
+const supabase = createClient(
+    process.env.SUPABASE_URL, 
+    process.env.SUPABASE_ANON_KEY
+);
 
-// 模型统一网关配置字典 (使用各大平台的 OpenAI 兼容接口)
+// 模型统一网关配置字典
 const MODEL_CONFIGS = {
     'glm': {
         url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
@@ -28,33 +32,41 @@ const MODEL_CONFIGS = {
     }
 };
 
-// 独立的 PIN 校验接口
-app.post('/api/verify', (req, res) => {
-    const { pin } = req.body;
-    if (pin === ACCESS_PIN) {
-        res.json({ success: true });
-    } else {
-        res.status(401).json({ error: 'PIN 错误' });
-    }
-});
-
 // 核心重构接口
 app.post('/api/enhance', async (req, res) => {
-    const { userText, contextType, outputLang, modelChoice = 'glm', pin } = req.body;
+    const { userText, contextType, outputLang, modelChoice = 'glm' } = req.body;
 
-    // 核心拦截：PIN 鉴权
-    if (pin !== ACCESS_PIN) {
-        return res.status(401).json({ error: "鉴权失败：无效的访问密钥" });
+    // 1. 从请求头中提取 Bearer Token 并通过 Supabase 验证身份
+    const authHeader = req.headers.authorization;
+    let user = null;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        try {
+            const { data: { user: supabaseUser }, error } = await supabase.auth.getUser(token);
+            if (!error && supabaseUser) {
+                user = supabaseUser;
+            }
+        } catch (err) {
+            console.error('Supabase 身份验证发生错误:', err.message);
+        }
+    }
+
+    // 2. 核心权限控制：非登录用户强行请求非默认模型时直接拦截
+    if (!user && modelChoice !== 'glm') {
+        return res.status(401).json({ error: "权限不足：该模型仅限注册登录用户使用。" });
     }
 
     if (!userText) {
         return res.status(400).json({ error: "文本不能为空" });
     }
 
-    const config = MODEL_CONFIGS[modelChoice] || MODEL_CONFIGS['glm'];
+    // 后端兜底收敛：确保即使前端被绕过，非登录用户的模型仍会降级为 glm
+    const finalModel = user ? modelChoice : 'glm';
+    const config = MODEL_CONFIGS[finalModel] || MODEL_CONFIGS['glm'];
     
     if (!config.key) {
-        return res.status(500).json({ error: `后端缺失 ${modelChoice} 的 API 密钥` });
+        return res.status(500).json({ error: `后端缺失 ${finalModel} 的 API 密钥` });
     }
 
     const langMap = {
@@ -106,7 +118,7 @@ Assistant: {
             description: '日常社交（如WeChat/WhatsApp）：聚焦情绪价值、地道自然、注重建立联系（Rapport-building）。',
             rules: `1. 真实人感（Human Touch）：语气轻松、真诚、自然，像真实朋友之间的对话，彻底消除官方腔调、机器味或说教感。
 2. 情绪共鸣（Emotional Resonance）：适当增加表达情绪的口语化词汇，拉近人际距离，避免冷冰冰的公事公办。
-3. 极简口语化（Conversational Simplicity）：符合即时通讯的阅读习惯，避免使用复杂的书面词汇和冗长的复合句。`,
+3. 极简口语化（Conversational Simplicity）：符合即时通讯的阅读习惯，避免使用复杂的书面词汇 and 冗长的复合句。`,
             example: `User: "Thank you for your help today. I am very grateful."
 Assistant: {
   "suggestion": "Thanks a million for stepping in today — I really appreciate it!",
@@ -165,15 +177,13 @@ ${jsonFormatInstruction}`;
         });
 
         const resultText = response.data.choices[0].message.content;
-        
-        // 清理可能被包裹的 Markdown 标记
         const cleanJsonText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
         const resultJson = JSON.parse(cleanJsonText);
         
         res.json(resultJson);
     } catch (error) {
         console.error(`[${config.model}] API 调用失败:`, error.response ? error.response.data : error.message);
-        res.status(500).json({ error: `增强引擎 (${modelChoice}) 响应异常，请重试。` });
+        res.status(500).json({ error: `增强引擎 (${finalModel}) 响应异常，请重试。` });
     }
 });
 
