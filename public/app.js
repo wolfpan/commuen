@@ -187,4 +187,4 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = `重构 <span class="shortcut">(Cmd/Ctrl + Enter)</span>`;
         }
     }
-});
+}); 
