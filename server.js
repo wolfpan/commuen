@@ -22,10 +22,15 @@ const MODEL_CONFIGS = {
         model: 'qwen3.6-plus-2026-04-02' 
     },
     'deepseek': {
-        url: 'https://api.deepseek.com/chat/completions',
-        key: process.env.DEEPSEEK_API_KEY,
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        key: process.env.ALI_API_KEY,
         model: 'deepseek-v4-flash' 
-    }
+    },
+//    'deepseek': {
+//        url: 'https://api.deepseek.com/chat/completions',
+//        key: process.env.DEEPSEEK_API_KEY,
+//        model: 'deepseek-v4-flash' 
+//    }
 };
 
 // 独立的 PIN 校验接口
