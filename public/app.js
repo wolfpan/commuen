@@ -1,14 +1,20 @@
 // app.js
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
     // 1. 初始化 Supabase 客户端
     // =========================================
     // ⚠️ 请在此处填入你自己的 Supabase 项目 URL 和 Anon Key
-    const SUPABASE_URL = 'https://ocanypotivoveuoezcax.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jYW55cG90aXZvdmV1b2V6Y2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5Njk1NDQsImV4cCI6MjA5NjU0NTU0NH0.Qygz7W4S0hgP4qvuApvj8oB7Q60GFY0f8GWXAedQtGE';
-    
-    // 由于我们在 index.html 引入了 CDN，所以全局有 supabase 对象
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabaseClient;
+    try {
+        const configRes = await fetch('/api/config');
+        const config = await configRes.json();
+        
+        // 使用获取到的变量初始化
+        supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+    } catch (error) {
+        console.error("无法获取 Supabase 配置，请检查后端服务:", error);
+        return; // 如果获取失败，直接阻断后续执行
+    }
 
     // =========================================
     // 2. 基础 DOM 节点获取

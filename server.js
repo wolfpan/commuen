@@ -7,6 +7,13 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
+app.get('/api/config', (req, res) => {
+    res.json({
+        supabaseUrl: process.env.SUPABASE_URL,
+        supabaseAnonKey: process.env.SUPABASE_ANON_KEY
+    });
+});
+
 // 初始化 Supabase 客户端，用于后端验证 JWT 
 const supabase = createClient(
     process.env.SUPABASE_URL, 
