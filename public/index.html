@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div id="authOverlay" class="pin-overlay">
+    <div id="authOverlay" class="pin-overlay hidden" style="display: none;">
         <div class="pin-box" style="width: 340px;">
             <h2>SYSTEM AUTH</h2>
             <p>登录以解锁高级 AI 模型</p>
@@ -95,18 +95,21 @@
 
         <div class="window-footer">
             <div class="select-group">
-                <span class="group-label">AI引擎 (AI model)</span>
+                <span class="group-label">AI引擎</span>
                 <select id="modelSelect">
                     <option value="glm" selected>GLM 4 Flash</option>
                     <option value="qwen" disabled>Qwen 3.6 plus (需登录)</option>
                     <option value="deepseek" disabled>DeepSeek V4 Flash (需登录)</option>
                 </select>
+                <button id="triggerLoginBtn" class="auth-guest-link" style="margin-left: 12px; font-size: 0.8rem;">
+                    登录使用更多模型
+                </button>
             </div>
         </div>
     </div>
     
     <div class="app-description">
-        我们不做翻译，只是帮助你更专业或优雅地表达想法。
+        我们不翻译，只是帮你更专业、优雅地表达想法。
     </div>
 
     <script src="app.js"></script>

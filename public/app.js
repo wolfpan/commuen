@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
     // 1. 初始化 Supabase 客户端
     // =========================================
-    // ⚠️ 请在此处填入你自己的 Supabase 项目 URL 和 Anon Key
     let supabaseClient;
     try {
         const configRes = await fetch('/api/config');
@@ -26,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pasteBtn = document.getElementById('pasteBtn');
     const copyBtn = document.getElementById('copyBtn');
     const modelSelect = document.getElementById('modelSelect');
+    const triggerLoginBtn = document.getElementById('triggerLoginBtn'); // 新增：底部触发登录按钮
 
     // =========================================
     // 3. Auth 弹窗节点获取
@@ -57,6 +57,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 opt.disabled = false;
                 opt.textContent = opt.textContent.replace(' (需登录)', '');
             });
+
+            // 隐藏底部的“登录使用更多模型”按钮
+            if (triggerLoginBtn) triggerLoginBtn.style.display = 'none';
         } else {
             // ----- 未登录/登出/游客状态 -----
             sessionToken = null;
@@ -74,6 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
             });
+
+            // 显示底部的“登录使用更多模型”按钮
+            if (triggerLoginBtn) triggerLoginBtn.style.display = 'inline-block';
         }
     });
 
@@ -81,6 +87,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 5. 身份验证事件绑定
     // =========================================
     
+    // 点击底部链接打开登录弹窗
+    if (triggerLoginBtn) {
+        triggerLoginBtn.addEventListener('click', showAuthOverlay);
+    }
+
     // 登录
     loginBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
@@ -111,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleAuthLoading(false);
     });
 
-    // 游客免登录进场
+    // 游客免登录进场 (在弹窗内点击关掉弹窗)
     guestBtn.addEventListener('click', () => {
         hideAuthOverlay();
     });
@@ -119,7 +130,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 登出
     logoutBtn.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
-        showAuthOverlay();
+        // 登出后自动呼出弹窗，或者你也可以不写这行，让用户继续以游客模式留在页面
+        showAuthOverlay(); 
     });
 
     // 密码框回车快捷登录
