@@ -26,6 +26,11 @@ const MODEL_CONFIGS = {
         key: process.env.ALI_API_KEY,
         model: 'deepseek-v4-flash' 
     },
+    'deepseekpro': {
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        key: process.env.ALI_API_KEY,
+        model: 'deepseek-v4-pro' 
+    },
 //    'deepseek': {
 //        url: 'https://api.deepseek.com/chat/completions',
 //        key: process.env.DEEPSEEK_API_KEY,
