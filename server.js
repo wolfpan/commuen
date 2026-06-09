@@ -17,7 +17,7 @@ const MODEL_CONFIGS = {
         model: 'glm-4-flash-250414'
     },
     'qwen': {
-        url: 'https://dashscope-us.aliyuncs.com/compatible-mode/v1/chat/completions',
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
         model: 'qwen3.5-flash' 
     },
