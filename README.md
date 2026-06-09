@@ -35,12 +35,13 @@
 
 系统依赖 Node.js 环境，整体部署极为轻量，可无缝接入现有的 Docker 或自托管（Self-hosted）技术栈。
 
-**1. 克隆项目与安装依赖**
+**1. 克隆项目\安装依赖\系统初始化**
 
 ```bash
-git clone <repository-url>
-cd elegant-communication
+git clone git@github.com:wolfpan/commuen.git
+cd commuen
 npm install express axios dotenv
+npm init -y
 
 ```
 
