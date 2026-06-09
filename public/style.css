@@ -4,7 +4,6 @@
     padding: 0;
 }
 
-
 /* =========================================
    全局滚动条样式重塑 (暗黑极简风格)
    ========================================= */
@@ -106,7 +105,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%; /* [修正] 强制100%宽度，确保 space-between 能将按钮推至最右侧 */
+    width: 100%; 
     color: #666;
 }
 
@@ -125,7 +124,7 @@ body {
 }
 
 .icon-btn {
-    background-color: transparent; /* [修正] 明确背景色，覆盖系统默认 */
+    background-color: transparent; 
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #888;
     border-radius: 6px;
@@ -137,7 +136,7 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     outline: none;
-    -webkit-appearance: none; /* [修正] 彻底清除 iOS Safari 默认的按钮白色高光样式 */
+    -webkit-appearance: none; 
     appearance: none;
     padding: 0;
     margin: 0;
@@ -210,6 +209,23 @@ textarea::placeholder {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
+    line-height: 1.6;
+}
+
+/* 核心变动：新增智能路由标识徽章的样式 */
+.route-badge {
+    display: inline-block;
+    color: #D4AF37;
+    background-color: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 0px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-right: 6px;
+    vertical-align: middle;
+    transform: translateY(-1px);
+    letter-spacing: 0.5px;
 }
 
 .panel-footer {

@@ -167,7 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             suggestionText.textContent = data.suggestion;
-            rationaleText.textContent = data.rationale;
+            
+            // 核心变动：如果选择了自动检测模式，且后端返回了 detectedContext，则渲染路由徽章
+            if (contextType === 'auto' && data.detectedContext) {
+                rationaleText.innerHTML = `<span class="route-badge">智能路由: ${data.detectedContext}</span> ${data.rationale}`;
+            } else {
+                rationaleText.textContent = data.rationale;
+            }
             
         } catch (error) {
             console.error(error);

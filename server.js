@@ -25,12 +25,7 @@ const MODEL_CONFIGS = {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
         model: 'deepseek-v4-flash' 
-    },
-//    'deepseek': {
-//        url: 'https://api.deepseek.com/chat/completions',
-//        key: process.env.DEEPSEEK_API_KEY,
-//        model: 'deepseek-v4-flash' 
-//    }
+    }
 };
 
 // 独立的 PIN 校验接口
@@ -68,7 +63,23 @@ app.post('/api/enhance', async (req, res) => {
     };
     const targetLang = langMap[outputLang] || langMap['zh'];
 
+    // 定义不同场景的 AI Prompt 配置
     const contextConfigs = {
+        'auto': {
+            description: '自动路由（Auto-Detect）：请根据用户输入自动推断最适合的沟通场景（内部协作、商业/公关、或日常社交），并应用该场景的最佳实践。',
+            rules: `1. 场景侦测（Context Sniffing）：先判断此段话最可能是对内（高效/边界）、对外（体贴/平视）、还是私人社交（情绪/自然）。
+2. 动态加载核心规则：
+   - 若判定为【内部协作】：使用“客观现状+同步进展”的柔性边界表达，拒绝弱势兜圈子（如 I think/maybe），使用职场原生语，聚焦明确诉求。
+   - 若判定为【商业沟通】：坚决打破机械断句，使用破折号或轻量连词；将“方便时查看”等转化为无压迫感的异步关怀；提出合作时留有余地。
+   - 若判定为【日常社交】：语气真诚自然，增加情绪共鸣，使用极简口语化表达，彻底消除机器味。
+3. 结果提取：在输出的 JSON 中，必须将你侦测到的场景（如“商业沟通”、“内部协作”或“日常社交”）填入 \`detectedContext\` 字段。`,
+            example: `User: "I think maybe this timeline is a little difficult for us because some dependencies are not clear yet."
+Assistant: {
+  "suggestion": "This timeline feels tight on our side — a few dependencies are still unresolved. Can we revisit the dates once those are firmed up?",
+  "detectedContext": "内部协作",
+  "rationale": "去除了不自信的修饰词，换用更地道的职场原生动词组合，既有边界感又具建设性。"
+}`
+        },
         'internal': {
             description: '内部协作（如Slack/Teams）：工具流沟通，聚焦高效率、建设性边界与对事不对人。',
             rules: `1. 建设性直率（Constructive Firmness）：拒绝弱势兜圈子（如 I think, maybe, worried），但也严禁走向极端——绝对禁止使用绝对化、对抗性或死板的词汇（如 unfeasible, impossible, cannot）。使用“客观现状+同步进展”的柔性边界表达（如 feels tight on our side）。
@@ -104,7 +115,12 @@ Assistant: {
         }
     };
 
-    const currentConfig = contextConfigs[contextType] || contextConfigs['business'];
+    const currentConfig = contextConfigs[contextType] || contextConfigs['auto'];
+    const isAuto = (contextType === 'auto' || currentConfig === contextConfigs['auto']);
+
+    const jsonFormatInstruction = isAuto 
+        ? `{\n  "suggestion": "润色后的最终文案（⚠️ 必须严格使用【语言路径】要求的语言输出）",\n  "detectedContext": "你识别出的场景（如：商业沟通、内部协作、日常社交）",\n  "rationale": "用一句极简中文，点明该改写如何优化了句流或心理体验"\n}`
+        : `{\n  "suggestion": "润色后的最终文案（⚠️ 必须严格使用【语言路径】要求的语言输出）",\n  "rationale": "用一句极简中文，点明该改写如何优化了句流或心理体验"\n}`;
 
     const systemPrompt = `你是一个精通跨文化职场心理学的顶级沟通教练。
     
@@ -125,10 +141,7 @@ ${currentConfig.rules}
 ${currentConfig.example}
 
 强制返回 JSON 格式：
-{
-  "suggestion": "润色后的最终文案（⚠️ 必须严格使用【语言路径】要求的语言输出，无视范例中的语言差异）",
-  "rationale": "用一句极简中文，点明该改写如何优化了句流或心理体验"
-}`;
+${jsonFormatInstruction}`;
 
     const payload = {
         model: config.model,
