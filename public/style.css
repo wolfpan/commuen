@@ -694,3 +694,56 @@ select option:disabled {
     color: #444;
     background-color: #0f1110;
 }
+/* =========================================
+   文本框包装器与字数统计 (Input & Char Count)
+   ========================================= */
+.textarea-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 0;
+    margin-bottom: 1rem;
+}
+
+/* 覆盖原有 textarea 样式，为其底部流出呼吸空间 */
+.textarea-wrapper textarea {
+    flex: 1;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: #e0e0e0;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    margin-bottom: 0; 
+    padding-bottom: 1.5rem; /* 避免文字被右下角的统计数字遮挡 */
+}
+
+.char-count {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 0.75rem;
+    color: #555;
+    letter-spacing: 1px;
+    font-weight: 500;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+/* 触达字数上限时的视觉警示 */
+.char-count.limit-reached {
+    color: #ff5f56; 
+}
+
+/* 修复移动端下 .textarea-wrapper 的滚动问题 */
+@media (max-width: 900px) {
+    .textarea-wrapper {
+        overflow-y: auto;
+    }
+    .textarea-wrapper textarea {
+        overflow-y: visible; /* 让 wrapper 接管滚动 */
+    }
+}

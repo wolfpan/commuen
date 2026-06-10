@@ -68,7 +68,15 @@ app.post('/api/enhance', async (req, res) => {
         return res.status(400).json({ error: "文本不能为空" });
     }
 
-    // 后端兜底收敛：确保即使前端被绕过，非登录用户的模型仍会降级为 glm
+    // 3. 后端严格字数硬防线
+    const maxAllowedChars = user ? 800 : 500;
+    if (userText.length > maxAllowedChars) {
+        return res.status(400).json({ 
+            error: `输入越界：当前权限组最多允许处理 ${maxAllowedChars} 个字符。` 
+        });
+    }
+
+    // 4. 后端兜底收敛：确保即使前端被绕过，非登录用户的模型仍会降级为 glm
     const finalModel = user ? modelChoice : 'glm';
     const config = MODEL_CONFIGS[finalModel] || MODEL_CONFIGS['glm'];
     

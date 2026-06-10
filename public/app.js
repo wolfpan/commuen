@@ -19,13 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. 基础 DOM 节点获取
     // =========================================
     const userInput = document.getElementById('userInput');
+    const charCountEl = document.getElementById('charCount'); // 新增字数统计节点
     const submitBtn = document.getElementById('submitBtn');
     const suggestionText = document.getElementById('suggestionText');
     const rationaleText = document.getElementById('rationaleText');
     const pasteBtn = document.getElementById('pasteBtn');
     const copyBtn = document.getElementById('copyBtn');
     const modelSelect = document.getElementById('modelSelect');
-    const triggerLoginBtn = document.getElementById('triggerLoginBtn'); // 新增：底部触发登录按钮
+    const triggerLoginBtn = document.getElementById('triggerLoginBtn');
 
     // =========================================
     // 3. Auth 弹窗节点获取
@@ -39,36 +40,86 @@ document.addEventListener('DOMContentLoaded', async () => {
     const logoutBtn = document.getElementById('logoutBtn');
     const authError = document.getElementById('authError');
 
-    // 全局凭证状态
+    // 全局凭证与额度状态
     let sessionToken = null;
+    let maxChars = 300; // 默认游客额度
 
     // =========================================
-    // 4. Supabase 状态机驱动 (核心权限控制)
+    // 4. 字数引擎与输入拦截
+    // =========================================
+    
+    // 更新字数与 UI 状态
+    function updateCharCount() {
+        const currentLen = userInput.value.length;
+        charCountEl.textContent = `${currentLen}/${maxChars}`;
+        
+        if (currentLen >= maxChars) {
+            charCountEl.classList.add('limit-reached');
+        } else {
+            charCountEl.classList.remove('limit-reached');
+        }
+    }
+
+    // 监听键盘输入
+    userInput.addEventListener('input', () => {
+        if (userInput.value.length > maxChars) {
+            userInput.value = userInput.value.substring(0, maxChars);
+        }
+        updateCharCount();
+    });
+
+    // 绑定粘贴事件（含截断逻辑）
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                const newText = userInput.value + text;
+                userInput.value = newText.substring(0, maxChars);
+                updateCharCount();
+                userInput.focus();
+            }
+        } catch (err) {
+            console.error('粘贴失败: ', err);
+            alert('无法读取剪贴板，请检查浏览器权限。');
+        }
+    });
+
+    // 初始化渲染一次字数
+    updateCharCount();
+
+    // =========================================
+    // 5. Supabase 状态机驱动 (核心权限与额度控制)
     // =========================================
     supabaseClient.auth.onAuthStateChange((event, session) => {
         if (session) {
             // ----- 登录状态 -----
             sessionToken = session.access_token;
+            maxChars = 500; // 提升输入额度
             logoutBtn.style.display = 'flex';
             hideAuthOverlay();
             
-            // 释放所有模型选择权，并去除下拉框中的“(需登录)”字样
+            // 释放所有模型选择权
             Array.from(modelSelect.options).forEach(opt => {
                 opt.disabled = false;
                 opt.textContent = opt.textContent.replace(' (需登录)', '');
             });
 
-            // 隐藏底部的“登录使用更多模型”按钮
             if (triggerLoginBtn) triggerLoginBtn.style.display = 'none';
         } else {
             // ----- 未登录/登出/游客状态 -----
             sessionToken = null;
+            maxChars = 300; // 降级额度
             logoutBtn.style.display = 'none';
             
-            // 强制将模型回滚至默认的 GLM 4
+            // 如果登出时文本已超限，强制截断
+            if (userInput.value.length > maxChars) {
+                userInput.value = userInput.value.substring(0, maxChars);
+            }
+            
+            // 强制将模型回滚至默认
             modelSelect.value = 'glm';
             
-            // 禁用高级模型，并补充“(需登录)”提示
+            // 禁用高级模型
             Array.from(modelSelect.options).forEach(opt => {
                 if (opt.value !== 'glm') {
                     opt.disabled = true;
@@ -78,21 +129,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // 显示底部的“登录使用更多模型”按钮
             if (triggerLoginBtn) triggerLoginBtn.style.display = 'inline-block';
         }
+        
+        // 状态变更后刷新字数 UI
+        updateCharCount();
     });
 
     // =========================================
-    // 5. 身份验证事件绑定
+    // 6. 身份验证事件绑定
     // =========================================
     
-    // 点击底部链接打开登录弹窗
     if (triggerLoginBtn) {
         triggerLoginBtn.addEventListener('click', showAuthOverlay);
     }
 
-    // 登录
     loginBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
@@ -105,7 +156,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleAuthLoading(false);
     });
 
-    // 注册
     signupBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
@@ -122,24 +172,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleAuthLoading(false);
     });
 
-    // 游客免登录进场 (在弹窗内点击关掉弹窗)
     guestBtn.addEventListener('click', () => {
         hideAuthOverlay();
     });
 
-    // 登出
     logoutBtn.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
-        // 登出后自动呼出弹窗，或者你也可以不写这行，让用户继续以游客模式留在页面
         showAuthOverlay(); 
     });
 
-    // 密码框回车快捷登录
     passwordInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') loginBtn.click();
     });
 
-    // Auth 相关的 UI 辅助函数
+    // Auth UI 辅助
     function showAuthError(msg) {
         authError.textContent = msg;
         setTimeout(() => authError.textContent = '', 4000);
@@ -163,7 +209,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function showAuthOverlay() {
         authOverlay.style.display = 'flex';
-        // 触发重绘，确保过渡动画生效
         void authOverlay.offsetWidth;
         authOverlay.classList.remove('hidden');
         emailInput.focus();
@@ -171,24 +216,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // =========================================
-    // 6. 核心业务逻辑 (粘贴、复制、提交重构)
+    // 7. 业务提交与结果处理
     // =========================================
 
-    // 绑定粘贴事件
-    pasteBtn.addEventListener('click', async () => {
-        try {
-            const text = await navigator.clipboard.readText();
-            if (text) {
-                userInput.value = text;
-                userInput.focus();
-            }
-        } catch (err) {
-            console.error('粘贴失败: ', err);
-            alert('无法读取剪贴板，请检查浏览器权限。');
-        }
-    });
-
-    // 绑定复制事件
     copyBtn.addEventListener('click', async () => {
         const textToCopy = suggestionText.textContent;
         if (!textToCopy || textToCopy === '等待输入内容...' || suggestionText.classList.contains('empty-state')) {
@@ -198,7 +228,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             await navigator.clipboard.writeText(textToCopy);
             
-            // 复制成功的视觉反馈 (呈现绿色高光及勾选图标)
             const originalHTML = copyBtn.innerHTML;
             copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#27c93f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
             copyBtn.style.borderColor = "rgba(39, 201, 63, 0.4)";
@@ -212,7 +241,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 绑定主请求事件
     userInput.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
             submitRequest();
@@ -221,7 +249,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     submitBtn.addEventListener('click', submitRequest);
 
-    // 发送重构请求
     async function submitRequest() {
         const text = userInput.value.trim();
         if (!text) return;
@@ -230,7 +257,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const outputLang = document.getElementById('outputLangSelect').value;
         const modelChoice = modelSelect.value; 
 
-        // 设置 Loading 状态
         submitBtn.disabled = true;
         submitBtn.classList.add('loading');
         submitBtn.innerHTML = `
@@ -243,10 +269,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         rationaleText.textContent = '推演最佳重构策略中...';
 
         try {
-            // 动态组装请求头
             const headers = { 'Content-Type': 'application/json' };
             if (sessionToken) {
-                headers['Authorization'] = `Bearer ${sessionToken}`; // 附带身份凭证
+                headers['Authorization'] = `Bearer ${sessionToken}`;
             }
 
             const response = await fetch('/api/enhance', {
@@ -260,20 +285,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 })
             });
 
-            // 拦截后端返回的 401（可能是 JWT 过期，或游客恶意调用受限模型）
-            if (response.status === 401) {
-                showAuthOverlay();
-                throw new Error('会话过期或需登录解锁该模型，请重新验证。');
+            // 后端拦截触发（含字数超限、权限不足等情况）
+            if (response.status === 400 || response.status === 401) {
+                const errData = await response.json();
+                if (response.status === 401) showAuthOverlay();
+                throw new Error(errData.error || '会话异常，请检查状态。');
             }
 
             if (!response.ok) throw new Error('网络请求失败');
 
             const data = await response.json();
 
-            // 渲染结果
             suggestionText.textContent = data.suggestion;
             
-            // 渲染智能路由徽章
             if (contextType === 'auto' && data.detectedContext) {
                 rationaleText.innerHTML = `<span class="route-badge">智能路由: ${data.detectedContext}</span> ${data.rationale}`;
             } else {
@@ -285,7 +309,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             suggestionText.textContent = '重构失败。';
             rationaleText.textContent = `错误：${error.message}`;
         } finally {
-            // 恢复按钮状态
             submitBtn.disabled = false;
             submitBtn.classList.remove('loading');
             submitBtn.innerHTML = `重构 <span class="shortcut">(Cmd/Ctrl + Enter)</span>`;
