@@ -36,7 +36,7 @@ const MODEL_CONFIGS = {
     'qwen': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
-        model: 'qwen3.6-35b-a3b' 
+        model: 'qwen3.5-flash' 
     },
     'qwen2': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
