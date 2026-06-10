@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>talk9c.com | 沟通的本质，是重塑边界</title>
+    <style>
+        /* =========================================
+           极简主义黑白/暗金美学
+           ========================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            /* 开启强制滚动对齐，实现严格的“一屏一屏”体验 */
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #000000;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            padding: 0;
+            overflow-x: hidden;
+            letter-spacing: 0.05em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        /* 独立满屏容器 */
+        .screen {
+            min-height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            /* 滚动对齐锚点 */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* =========================================
+           Screen 1: Hero
+           ========================================= */
+        header {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            /* 保证导航栏高度不被压缩 */
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: #D4AF37;
+        }
+
+        .hero-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* 绝对垂直居中 */
+            align-items: center;
+            padding-bottom: 5vh;
+            /* 视觉重心微微上移 */
+        }
+
+        .hero {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            padding: 0 1.5rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #888888;
+            max-width: 720px;
+            margin: 0 auto 3.5rem auto;
+            font-weight: 400;
+        }
+
+        /* =========================================
+           交互演示黑盒 (打字机特效容器)
+           ========================================= */
+        .demo-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #0f1110;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .demo-container {
+                flex-direction: column;
+            }
+        }
+
+        .demo-panel {
+            flex: 1;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 220px;
+        }
+
+        .demo-left {
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 95, 86, 0.01);
+        }
+
+        @media (max-width: 768px) {
+            .demo-left {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        .demo-right {
+            background-color: rgba(212, 175, 55, 0.01);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .label-red {
+            color: #ff5f56;
+        }
+
+        .label-gold {
+            color: #D4AF37;
+        }
+
+        .status-indicator {
+            font-size: 0.65rem;
+            color: #555;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-indicator.active {
+            opacity: 1;
+        }
+
+        .demo-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            font-weight: 400;
+            min-height: 4rem;
+        }
+
+        .text-muted {
+            color: #a0a0a0;
+        }
+
+        .text-highlight {
+            color: #D4AF37;
+            font-weight: 500;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background-color: currentColor;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+            opacity: 0;
+        }
+
+        .cursor.active {
+            opacity: 1;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* 向下滚动提示 */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #555;
+            animation: bounce 2s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0) translateX(-50%);
+            }
+
+            40% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+
+            60% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+        }
+
+        /* =========================================
+           Screen 2: Value Proposition & CTA
+           ========================================= */
+        .screen-2-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .values-section {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .values-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+        }
+
+        .value-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .value-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-left: 0.75rem;
+        }
+
+        .value-card h3::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 25%;
+            height: 50%;
+            width: 2px;
+            background-color: #D4AF37;
+        }
+
+        .value-card p {
+            font-size: 0.92rem;
+            color: #888888;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            margin-top: 6rem;
+            text-align: center;
+        }
+
+        .cta-btn {
+            background-color: transparent;
+            color: #D4AF37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 1.2rem 2.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-transform: uppercase;
+            outline: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .cta-btn:hover {
+            background-color: #D4AF37;
+            color: #000000;
+            border-color: #D4AF37;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        footer {
+            width: 100%;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 0.75rem;
+            color: #444444;
+            letter-spacing: 1px;
+            margin-top: auto;
+            /* 推至第二屏最底部 */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 第一屏：Hero & 交互黑盒 -->
+    <div class="screen">
+        <header>
+            <div class="logo">TALK9<span>C</span></div>
+        </header>
+
+        <div class="hero-wrapper">
+            <section class="hero">
+                <h1>沟通的本质，是重塑边界。</h1>
+                <p class="subtitle">我们不翻译，我们重构职场博弈的筹码。专为跨国协作、向上管理与高难度商业沟通设计的 AI 沟通专家。</p>
+
+                <div class="demo-container">
+                    <div class="demo-panel demo-left">
+                        <div class="panel-header">
+                            <div class="panel-label label-red">● YOU TYPED</div>
+                            <div class="status-indicator" id="leftStatus">输入中...</div>
+                        </div>
+                        <div class="demo-text text-muted">
+                            <span id="rawText"></span><span class="cursor" id="leftCursor"></span>
+                        </div>
+                    </div>
+                    <div class="demo-panel demo-right">
+                        <div class="panel-header">
+                            <div class="panel-label label-gold">✦ SUGGESTS</div>
+                            <div class="status-indicator" id="rightStatus">引擎重构中...</div>
+                        </div>
+                        <div class="demo-text text-highlight">
+                            <span id="refinedText"></span><span class="cursor" id="rightCursor"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 第二屏：价值主张 & CTA -->
+    <div class="screen">
+        <div class="screen-2-wrapper">
+            <section class="values-section">
+                <div class="values-grid">
+                    <div class="value-card">
+                        <h3>建设性直率</h3>
+                        <p>告别弱势的“I think”，使用地道职场表达，守住底线，对事不对人。</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>低压体贴感</h3>
+                        <p>打破机械的句式断句，将语意自然串联，让沟通实现松弛感。</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>情绪价值重塑</h3>
+                        <p>抹除AI感，还原真实、克制且专业的表达，让每一次交流都具备质感。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta-section">
+                <button class="cta-btn" onclick="location.href='#'">开启你的第一次商业对话</button>
+            </section>
+        </div>
+
+        <footer>
+            &copy; 2026 TALK9C.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dialogueCases = [
+                {
+                    raw: "你给的时间太短了，根本不可能完成。",
+                    refined: "This timeline feels tight. Can we revisit the dates?"
+                },
+                {
+                    raw: "我很抱歉，能不能求您通融一下，让我晚点交？",
+                    refined: "To ensure quality, would it be possible to submit by Friday?"
+                },
+                {
+                    raw: "我实在太忙了，这事你找别人弄吧。",
+                    refined: "I'm currently at capacity. Would you be open to redirecting this?"
+                }
+            ];
+
+            const rawEl = document.getElementById('rawText');
+            const refinedEl = document.getElementById('refinedText');
+            const leftCursor = document.getElementById('leftCursor');
+            const rightCursor = document.getElementById('rightCursor');
+            const leftStatus = document.getElementById('leftStatus');
+            const rightStatus = document.getElementById('rightStatus');
+
+            let currentCaseIndex = 0;
+            const typeSpeed = 50;
+            const aiSpeed = 30;
+            const pauseRead = 3500;
+            const pauseProcess = 600;
+
+            async function typeWriter(element, text, speed) {
+                element.innerHTML = '';
+                for (let i = 0; i < text.length; i++) {
+                    element.innerHTML += text.charAt(i);
+                    await new Promise(r => setTimeout(r, speed + (Math.random() * 20)));
+                }
+            }
+
+            async function eraseText(element1, element2) {
+                element1.style.transition = 'opacity 0.4s ease';
+                element2.style.transition = 'opacity 0.4s ease';
+                element1.style.opacity = 0;
+                element2.style.opacity = 0;
+
+                await new Promise(r => setTimeout(r, 400));
+
+                element1.innerHTML = '';
+                element2.innerHTML = '';
+                element1.style.opacity = 1;
+                element2.style.opacity = 1;
+            }
+
+            async function runDemoLoop() {
+                while (true) {
+                    const currentCase = dialogueCases[currentCaseIndex];
+
+                    leftCursor.classList.add('active');
+                    rightCursor.classList.remove('active');
+                    leftStatus.classList.add('active');
+
+                    await typeWriter(rawEl, "“" + currentCase.raw + "”", typeSpeed);
+
+                    leftCursor.classList.remove('active');
+                    leftStatus.classList.remove('active');
+
+                    rightStatus.classList.add('active');
+                    await new Promise(r => setTimeout(r, pauseProcess));
+
+                    rightCursor.classList.add('active');
+                    await typeWriter(refinedEl, "“" + currentCase.refined + "”", aiSpeed);
+
+                    rightStatus.classList.remove('active');
+
+                    await new Promise(r => setTimeout(r, pauseRead));
+
+                    await eraseText(rawEl, refinedEl);
+                    rightCursor.classList.remove('active');
+
+                    currentCaseIndex = (currentCaseIndex + 1) % dialogueCases.length;
+
+                    await new Promise(r => setTimeout(r, 500));
+                }
+            }
+
+            setTimeout(runDemoLoop, 1000);
+        });
+    </script>
+</body>
+
+</html>
