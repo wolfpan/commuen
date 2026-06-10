@@ -34,19 +34,19 @@ const MODEL_CONFIGS = {
         model: 'glm-4-flash-250414'
     },
     'glm2': {
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        key: process.env.ALI_API_KEY,
-        model: 'glm-5.1' 
+        url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+        key: process.env.GLM_API_KEY,
+        model: 'glm-4.7-flash'
     },
     'qwen': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
-        model: 'qwen3.6-flash' 
+        model: 'qwen3.6-35b-a3b' 
     },
     'qwen2': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
-        model: 'qwen3.6-plus-2026-04-02' 
+        model: 'qwen3.6-flash-2026-04-16' 
     },
     'deepseek': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
