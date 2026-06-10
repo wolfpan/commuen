@@ -286,14 +286,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             // 后端拦截触发（含字数超限、权限不足等情况）
-            if (response.status === 400 || response.status === 401) {
-                const errData = await response.json();
-                if (response.status === 401) showAuthOverlay();
-                throw new Error(errData.error || '会话异常，请检查状态。');
+            // 拦截所有非 200 请求，优先提取后端自定义的详细错误说明
+            if (!response.ok) {
+                if (response.status === 401) showAuthOverlay(); // 401 专属处理：弹登录框
+                
+                let errorMessage = '网络请求失败，请稍后再试。';
+                try {
+                    const errData = await response.json();
+                    if (errData.error) {
+                        errorMessage = errData.error; // 成功提取 429 或 400 的后端报错提示
+                    }
+                } catch (parseError) {
+                    // 兜底：如果后端崩溃没有返回 JSON，保持默认报错以免前端卡死
+                }
+                
+                throw new Error(errorMessage);
             }
-
-            if (!response.ok) throw new Error('网络请求失败');
-
+            
             const data = await response.json();
 
             suggestionText.textContent = data.suggestion;

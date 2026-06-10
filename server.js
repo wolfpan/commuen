@@ -1,9 +1,15 @@
 const express = require('express');
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');// 引入限流中间件
 require('dotenv').config();
 
 const app = express();
+
+// 【重要】如果你部署在 Nginx、Vercel 等反向代理之后，必须开启此项以获取真实用户 IP
+// 如果是本地直接跑或直接对外网暴露端口，可以注释掉这行
+app.set('trust proxy', 1); 
+
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -39,27 +45,56 @@ const MODEL_CONFIGS = {
     }
 };
 
-// 核心重构接口
-app.post('/api/enhance', async (req, res) => {
-    const { userText, contextType, outputLang, modelChoice = 'glm' } = req.body;
-
-    // 1. 从请求头中提取 Bearer Token 并通过 Supabase 验证身份
+// =========================================
+// 1. 前置鉴权中间件
+// =========================================
+const checkAuth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
-    let user = null;
+    req.user = null;
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
         try {
             const { data: { user: supabaseUser }, error } = await supabase.auth.getUser(token);
             if (!error && supabaseUser) {
-                user = supabaseUser;
+                req.user = supabaseUser; // 将解析出的用户对象挂载到 req 上
             }
         } catch (err) {
             console.error('Supabase 身份验证发生错误:', err.message);
         }
     }
+    next();
+};
 
-    // 2. 核心权限控制：非登录用户强行请求非默认模型时直接拦截
+// =========================================
+// 2. 动态频率限流中间件
+// =========================================
+const enhanceRateLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1小时的时间窗口
+    max: (req, res) => {
+        return req.user ? 50 : 20;
+    },
+    keyGenerator: (req, res) => {
+        // 核心防刷逻辑：已登录基于 UserID，未登录则使用官方函数处理 IP，满足新版底层安全校验
+        return req.user ? req.user.id : ipKeyGenerator(req.ip || req.socket.remoteAddress || '');
+    },
+    handler: (req, res, next, options) => {
+        const limitType = req.user ? '注册用户' : '游客';
+        const limitCount = req.user ? 50 : 20;
+        res.status(429).json({ 
+            error: `请求过于频繁：${limitType}每小时最多允许重构 ${limitCount} 次，请稍后再试。` 
+        });
+    }
+});
+
+// =========================================
+// 3. 核心重构接口 (挂载中间件)
+// =========================================
+app.post('/api/enhance', checkAuth, enhanceRateLimiter, async (req, res) => {
+    const { userText, contextType, outputLang, modelChoice = 'glm' } = req.body;
+    const user = req.user; // 直接从上游中间件获取 user 状态
+
+    // 核心权限控制：非登录用户强行请求非默认模型时直接拦截
     if (!user && modelChoice !== 'glm') {
         return res.status(401).json({ error: "权限不足：该模型仅限注册登录用户使用。" });
     }
@@ -68,7 +103,7 @@ app.post('/api/enhance', async (req, res) => {
         return res.status(400).json({ error: "文本不能为空" });
     }
 
-    // 3. 后端严格字数硬防线
+    // 后端严格字数硬防线
     const maxAllowedChars = user ? 800 : 500;
     if (userText.length > maxAllowedChars) {
         return res.status(400).json({ 
@@ -76,7 +111,7 @@ app.post('/api/enhance', async (req, res) => {
         });
     }
 
-    // 4. 后端兜底收敛：确保即使前端被绕过，非登录用户的模型仍会降级为 glm
+    // 后端兜底收敛：确保即使前端被绕过，非登录用户的模型仍会降级为 glm
     const finalModel = user ? modelChoice : 'glm';
     const config = MODEL_CONFIGS[finalModel] || MODEL_CONFIGS['glm'];
     
