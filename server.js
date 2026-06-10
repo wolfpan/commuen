@@ -33,10 +33,20 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4-flash-250414'
     },
+    'glm2': {
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        key: process.env.ALI_API_KEY,
+        model: 'glm-5.1' 
+    },
     'qwen': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
         model: 'qwen3.6-plus-2026-04-02' 
+    },
+    'qwen2': {
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        key: process.env.ALI_API_KEY,
+        model: 'qwen3.7-plus' 
     },
     'deepseek': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
@@ -104,7 +114,7 @@ app.post('/api/enhance', checkAuth, enhanceRateLimiter, async (req, res) => {
     }
 
     // 后端严格字数硬防线
-    const maxAllowedChars = user ? 800 : 500;
+    const maxAllowedChars = user ? 500 : 300;
     if (userText.length > maxAllowedChars) {
         return res.status(400).json({ 
             error: `输入越界：当前权限组最多允许处理 ${maxAllowedChars} 个字符。` 
