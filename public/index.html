@@ -52,12 +52,20 @@
                 <div class="panel-footer">
                     <div class="select-group">
                         <span class="group-label">场景</span>
-                        <select id="contextSelect">
-                            <option value="auto" selected>自动检测 (Auto)</option>
-                            <option value="internal">内部协作</option>
-                            <option value="business">商业沟通</option>
-                            <option value="social">日常社交</option>
-                        </select>
+                            <select id="contextSelect">
+                                <option value="auto" selected>自动检测 (Auto)</option>
+                                <optgroup label="高压博弈场景">
+                                    <option value="advocacy">维权交涉</option>
+                                    <option value="upward">向上管理</option>
+                                    <option value="boundary">催促or拒绝</option>
+                                    <option value="cold_reach">弱连接增强</option>
+                                </optgroup>
+                                <optgroup label="常规职业场景">
+                                    <option value="internal">内部协作</option>
+                                    <option value="business">商业沟通</option>
+                                    <option value="social">轻松社交</option>
+                                </optgroup>
+                            </select>
                     </div>
                 </div>
             </div>
@@ -91,6 +99,7 @@
                         <select id="outputLangSelect">
                             <option value="zh" selected>中文</option>
                             <option value="en">英文</option>
+                            <option value="jp">日语</option>
                         </select>
                     </div>
                 </div>

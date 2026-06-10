@@ -125,60 +125,96 @@ app.post('/api/enhance', checkAuth, enhanceRateLimiter, async (req, res) => {
     }
 
     const langMap = {
-        'zh': '无论用户输入的是中文、英文还是混合语言，最终输出必须是纯正且符合专业语境的【中文】。',
-        'en': '无论用户输入的是中文、英文还是混合语言，最终输出必须是母语级别的地道【英文】。'
+        'zh': '无论用户输入的是中文、西班牙、法语、日语、英文还是混合语言，最终输出必须是纯正且符合专业语境的【中文】。',
+        'en': '无论用户输入的是中文、西班牙、法语、日语、英文还是混合语言，最终输出必须是母语级别的地道【英文】。',
+        'jp': '无论用户输入的是中文、西班牙、法语、日语、英文还是混合语言，最终输出必须是母语级别的地道【日语】。'
     };
     const targetLang = langMap[outputLang] || langMap['zh'];
 
     // 定义不同场景的 AI Prompt 配置
     const contextConfigs = {
         'auto': {
-            description: '自动路由（Auto-Detect）：请根据用户输入自动推断最适合的沟通场景（内部协作、商业/公关、或日常社交），并应用该场景的最佳实践。',
-            rules: `1. 场景侦测（Context Sniffing）：先判断此段话最可能是对内（高效/边界）、对外（体贴/平视）、还是私人社交（情绪/自然）。
-2. 动态加载核心规则：
-   - 若判定为【内部协作】：使用“客观现状+同步进展”的柔性边界表达，拒绝弱势兜圈子（如 I think/maybe），使用职场原生语，聚焦明确诉求。
-   - 若判定为【商业沟通】：坚决打破机械断句，使用破折号或轻量连词；将“方便时查看”等转化为无压迫感的异步关怀；提出合作时留有余地。
-   - 若判定为【日常社交】：语气真诚自然，增加情绪共鸣，使用极简口语化表达，彻底消除机器味。
-3. 结果提取：在输出的 JSON 中，必须将你侦测到的场景（如“商业沟通”、“内部协作”或“日常社交”）填入 \`detectedContext\` 字段。`,
-            example: `User: "I think maybe this timeline is a little difficult for us because some dependencies are not clear yet."
+            description: '自动路由（Auto-Detect）：自动推断最适合的沟通博弈场景，并加载对应的战术指令。',
+            rules: `1. 场景侦测（Context Sniffing）：先判断文本的核心诉求是【维权交涉】、【向上管理】、【边界设定】、【弱连结破冰】，还是常规协作。
+2. 动态加载战术规则：
+   - 【规则博弈/维权】：剥离私人情绪，使用客观事实与商业质询，建立平视的契约姿态。
+   - 【向上管理】：绝对消除过度道歉，提出建设性方案，主动给出时间节点以降低对方决策成本。
+   - 【边界设定】：绝不直接指责。以共同业务目标为掩护，通过“提供柔性支持”来施加隐性的进度压力。
+   - 【弱连结破冰】：将高成本索取转化为低成本互动。结尾强制附带低压关怀（如 No pressure to reply immediately）。
+   - 【常规沟通】：打破机械断句，使用破折号/轻连词，保持职场原生语感。
+3. 结果提取：在输出的 JSON 中，必须将你侦测到的具体场景名填入 \`detectedContext\` 字段。`,
+            example: `User: "我的网断了三天，你们为什么还不修？我明天要在线考试，快点解决！"
 Assistant: {
-  "suggestion": "This timeline feels tight on our side — a few dependencies are still unresolved. Can we revisit the dates once those are firmed up?",
-  "detectedContext": "内部协作",
-  "rationale": "去除了不自信的修饰词，换用更地道的职场原生动词组合，既有边界感又具建设性。"
+  "suggestion": "I'm writing to formally report a three-day service outage at my address. Given that I rely on this connection for an upcoming remote exam tomorrow, this disruption is highly critical. Could you please provide an immediate update on the repair status?",
+  "detectedContext": "规则博弈 (维权)",
+  "rationale": "剥离情绪，用正式报告建立严肃性，将焦虑转化为客观的业务受损陈述。"
 }`
         },
-        'internal': {
-            description: '内部协作（如Slack/Teams）：工具流沟通，聚焦高效率、建设性边界与对事不对人。',
-            rules: `1. 建设性直率（Constructive Firmness）：拒绝弱势兜圈子（如 I think, maybe, worried），但也严禁走向极端——绝对禁止使用绝对化、对抗性或死板的词汇（如 unfeasible, impossible, cannot）。使用“客观现状+同步进展”的柔性边界表达（如 feels tight on our side）。
-2. 地道职场原生语（Native Corporate Phrasing）：优先使用跨国大厂高频、自然的惯用语组合（如用 "revisit" 替代 "adjust/change"，用 "firmed up" 替代 "confirmed"）。
-3. 明确诉求（Clear Ask）：将模糊的焦虑或担忧，转化为“［客观现状］+［明确的下一步行动建议］”。`,
-            example: `User: "I think maybe this timeline is a little difficult for us because some dependencies are not clear yet."
+        'advocacy': {
+            description: '规则博弈与维权（如：与机构、房东交涉）。聚焦事实、逻辑驱动与体面的商业质询。',
+            rules: `1. 事实与逻辑驱动（Fact-Driven）：剥离所有“中式祈使句”的愤怒或无助求饶（如 Why you do this / Please help），使用客观事实建立谈判威慑力。
+2. 商业质询（Commercial Inquiry）：将私人的焦虑转化为业务视角的客观陈述（如用“业务连续性受损”替代“我明天要考试”）。
+3. 平视与契约精神（Equal Footing）：不卑不亢，以平视的姿态要求对方履约。绝对禁止情绪化宣泄和反问句。`,
+            example: `User: "我的网断了三天，你们为什么还不修？我明天要在线考试，快点解决！"
 Assistant: {
-  "suggestion": "This timeline feels tight on our side — a few dependencies are still unresolved. Can we revisit the dates once those are firmed up?",
-  "rationale": "去除了不自信的修饰词，避免了对抗性否定，换用更地道的职场原生动词组合，既有边界感又具建设性。"
+  "suggestion": "I'm writing to formally report a three-day service outage at my address. Given that I rely on this connection for an upcoming remote exam tomorrow, this disruption is highly critical. Could you please provide an immediate update on the repair status?",
+  "rationale": "剥离情绪，用正式报告建立书面记录的严肃性，将私人焦虑转化为客观的业务受损陈述。"
 }`
+        },
+        'upward': {
+            description: '向上管理（如：申请延期、请求资源）。消除过度道歉，提供建设性方案。',
+            rules: `1. 消除过度道歉（Zero Over-Apologizing）：彻底删除多余的 sorry、麻烦您了等带有道德亏欠感的词汇，避免主动剥夺自身的专业对等性。
+2. 建设性掩护（Constructive Framing）：将诉求包装为“为了保证交付质量”、“基于客观排期冲突”等正当、专业的理由。
+3. 降低决策成本（Actionable Proposal）：主动给出一个明确的新时间节点或补救方案，将开放式的索要转化为封闭式的确认。`,
+            example: `User: "教授您好，非常抱歉打扰您。我生病了，能不能求您把作业延期几天？非常对不起！"
+Assistant: {
+  "suggestion": "Dear Professor, I'm reaching out to request a brief extension for the upcoming assignment. Given an unexpected health issue, I'd like to ensure the quality of my submission isn't compromised. Would it be possible to submit the paper by Friday?",
+  "rationale": "删除了过度道歉，将请求包装为保证交付质量的建设性提议，并主动提供明确的补救时间点。"
+}`
+        },
+        'boundary': {
+            description: '边界设定（如：催促团队进度、拒绝不合理要求）。建设性直率，施加隐性压力。',
+            rules: `1. 建设性直率（Constructive Firmness）：绝对不直接指责对方拖延或犯错，避免产生防御机制和火药味。
+2. 共同目标掩护（Shared Goal Alignment）：以“团队共同的交付节点”或“顺利推进项目”作为推进对话的合理掩护。
+3. 柔性施压（Soft Pressure）：使用体面的职场外交辞令（如“是否遇到阻碍需要帮助”），在表面提供支持的同时，施加实质性的进度压力。`,
+            example: `User: "你为什么还没把PPT发给我？明天就要交了，拖延会害了全组。"
+Assistant: {
+  "suggestion": "Just checking in on your section of the deck — as we're aiming to finalize everything by tomorrow, let me know if you've run into any blockers or need support wrapping it up so we can safely hit the deadline.",
+  "rationale": "不指责拖延，以团队共同目标为掩护，用提供帮助的体面姿态施加隐性的进度压力。"
+}`
+        },
+        'cold_reach': {
+            description: '弱连结破冰（如：Cold Email、LinkedIn自荐）。低压关怀，提供体面退路。',
+            rules: `1. 降本交往（Low-Cost Interaction）：将高成本索取（如直接索要内推或工作机会）转化为低成本互动（如寻求行业洞察或简短建议）。
+2. 价值前置（Value Upfront）：用极其克制的短句表明自己的背景或对对方的关注点，严禁带入沉重的情感包袱（如“找工作艰难”）。
+3. 异步低压体贴（Low-Pressure Closure）：结尾必须包含极其标准的职场异步关怀（如 "No pressure to reply immediately" 或 "feel free to connect when your schedule permits"），给对方留下体面的退路。`,
+            example: `User: "学长您好，我刚来英国找工作很艰难。这是我的简历，请问能帮我内推吗？万分感谢！"
+Assistant: {
+  "suggestion": "Hi [Name], I recently relocated to the UK and have been following your impressive work at [Company]. I'm currently exploring opportunities in this space and would love to hear your brief insights on the local industry landscape. No pressure to reply immediately.",
+  "rationale": "去除了沉重的情感包袱，将高门槛的内推索求降级为低成本的洞察交流，结尾补充标准的低压关怀。"
+}`
+        },
+        // --- 原有基础场景保留 ---
+        'internal': {
+            description: '内部协作（常规）：聚焦高效率与客观现状。',
+            rules: `1. 建设性直率（Constructive Firmness）：拒绝弱势兜圈子（如 I think, maybe），禁止对抗性词汇（如 impossible）。使用“客观现状+同步进展”的柔性表达。
+2. 地道职场原生语（Native Corporate Phrasing）：优先使用跨国企业高频惯用语组合（如 revisit, firm up）。
+3. 明确诉求（Clear Ask）：将模糊担忧转化为［客观现状］+［明确建议］。`,
+            example: `{ "suggestion": "This timeline feels tight on our side — a few dependencies are still unresolved. Can we revisit the dates once those are firmed up?", "rationale": "替换不自信修饰词，使用职场原生动词组合建立柔性边界。" }`
         },
         'business': {
-            description: '商业/公关（如LinkedIn/Email）：聚焦平等的同行交流，以及异步沟通的体贴与高级感。',
-            rules: `1. 句流呼吸感（Rhythm & Fluidity）：坚决打破教科书式的机械断句（拒绝连续三个单碎短句的堆砌）。使用破折号（—）、分词短语或轻量连词（so, given that）将语意自然串联，呈现高级、流畅的语流。
-2. 异步低压体贴（Low-Pressure Courtesy）：若原意包含“方便时查看”，应转化为极其松弛、体贴的异步职场达人表达（如 "feel free to review when it works for you"）。绝对禁止使用强加反馈压力的职场黑话（如 "let me know if we're aligned" 或 "waiting for your alignment"）。
-3. 平视感与探索性（Constructive Peer Tone）：提出合作时使用留有余地的句式（如 "I'd love to explore", "would you be open to"）。去掉中式英文的硬套（如 Attached is... please check...）和生硬推销感。`,
-            example: `User: "Attached is the updated deck. Because of time difference we send now, please check when convenient."
-Assistant: {
-  "suggestion": "I've attached the updated deck — sending now given the time difference, so feel free to review when it works for you.",
-  "rationale": "用破折号和因果连词将零碎短句无缝串联，并将‘方便时查看’转化为充满温度、毫无压迫感的异步关怀。"
-}`
+            description: '商业沟通（常规）：聚焦平等的同行交流与高级感。',
+            rules: `1. 句流呼吸感（Rhythm & Fluidity）：打破机械断句，使用破折号（—）或轻量连词将语意自然串联。
+2. 异步低压体贴（Low-Pressure Courtesy）：将“方便时查看”转化为松弛的异步表达（feel free to review when it works for you）。
+3. 平视感与探索性（Constructive Peer Tone）：提出合作时使用留有余地的句式（would you be open to）。`,
+            example: `{ "suggestion": "I've attached the updated deck — sending now given the time difference, so feel free to review when it works for you.", "rationale": "利用破折号串联语流，并注入毫无压迫感的异步关怀。" }`
         },
         'social': {
-            description: '日常社交（如WeChat/WhatsApp）：聚焦情绪价值、地道自然、注重建立联系（Rapport-building）。',
-            rules: `1. 真实人感（Human Touch）：语气轻松、真诚、自然，像真实朋友之间的对话，彻底消除官方腔调、机器味或说教感。
-2. 情绪共鸣（Emotional Resonance）：适当增加表达情绪的口语化词汇，拉近人际距离，避免冷冰冰的公事公办。
-3. 极简口语化（Conversational Simplicity）：符合即时通讯的阅读习惯，避免使用复杂的书面词汇 and 冗长的复合句。`,
-            example: `User: "Thank you for your help today. I am very grateful."
-Assistant: {
-  "suggestion": "Thanks a million for stepping in today — I really appreciate it!",
-  "rationale": "用极具人情味的口语表达替换了生硬刻板的书面致谢，瞬间拉近了社交距离。"
-}`
+            description: '日常社交（常规）：聚焦情绪价值与自然人感。',
+            rules: `1. 真实人感（Human Touch）：语气真诚自然，消除官方腔调或机器味。
+2. 情绪共鸣（Emotional Resonance）：增加表达情绪的口语化词汇，拉近人际距离。
+3. 极简口语化（Conversational Simplicity）：符合即时通讯阅读习惯，避免复杂书面词汇。`,
+            example: `{ "suggestion": "Thanks a million for stepping in today — I really appreciate it!", "rationale": "用极具人情味的口语替换刻板的书面致谢。" }`
         }
     };
 
