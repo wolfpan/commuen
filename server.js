@@ -33,11 +33,6 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4-flash-250414'
     },
-    'glm2': {
-        url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        key: process.env.GLM_API_KEY,
-        model: 'glm-4.7-flash'
-    },
     'qwen': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
