@@ -33,6 +33,11 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4-flash-250414'
     },
+    'glm2': {
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        key: process.env.ALI_API_KEY,
+        model: 'glm-5.1' 
+    },
     'qwen': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
@@ -185,9 +190,9 @@ Assistant: {
         },
         'cold_reach': {
             description: '弱连结破冰（如：Cold Email、LinkedIn自荐）。低压关怀，提供体面退路。',
-            rules: `1. 降本交往（Low-Cost Interaction）：将高成本索取（如直接索要内推或工作机会）转化为低成本互动（如寻求行业洞察或简短建议）。
-2. 价值前置（Value Upfront）：用极其克制的短句表明自己的背景或对对方的关注点，严禁带入沉重的情感包袱（如“找工作艰难”）。
-3. 异步低压体贴（Low-Pressure Closure）：结尾必须包含极其标准的职场异步关怀（如 "No pressure to reply immediately" 或 "feel free to connect when your schedule permits"），给对方留下体面的退路。`,
+            rules: `1. 降本交往（Low-Cost Interaction）：必须将高成本索取（直接索要内推、发简历、求职）转化为低成本互动（寻求行业洞察、简短建议）。⚠️ 允许且必须删减原文中“投递简历”、“求职艰难”等带有强压迫感和低估个人价值的元素。
+            2. 价值前置与留白（Value Upfront）：用极其克制的短句表明背景。如果原文缺乏对方信息，可使用“[对方公司/领域]”作为占位符，引导用户自行填补商业赞美。
+            3. 异步低压体贴（Low-Pressure Closure）：结尾强制使用松弛的现代职场关怀（如：占用您宝贵时间，如近期繁忙完全不必急于回复/随时在您方便时交流），给对方留下绝对体面的退路。`,  
             example: `User: "学长您好，我刚来英国找工作很艰难。这是我的简历，请问能帮我内推吗？万分感谢！"
 Assistant: {
   "suggestion": "Hi [Name], I recently relocated to the UK and have been following your impressive work at [Company]. I'm currently exploring opportunities in this space and would love to hear your brief insights on the local industry landscape. No pressure to reply immediately.",
@@ -238,7 +243,10 @@ Assistant: {
 严格执行以下场景专属约束：
 ${currentConfig.rules}
 4. 绝对忠实（Anti-Hallucination）：严禁凭空捏造原文没有的时间（如 next week）、地点、业务细节或多余的具体行动指令。
-5. 结构保留（Format Preservation）：⚠️ 强制要求！必须完整保留原文的信件结构，包括【称呼语（如：您好、Dear xx）】和【结尾落款/署名】。你的任务是优化正文的表达和句流，绝不可随意裁减用户的格式骨架。
+
+5. 结构保留与弹性重构（Format Preservation vs. Context Shift）：
+   - 一般场景下：必须完整保留原文的信件结构（包含称呼与落款），不可随意裁减用户的格式骨架。
+   - ⚠️ 特例豁免：如果当前场景是【弱连结破冰 (cold_reach)】或【向上管理 (upward)】，你被授权大胆剔除原文中“过度卑微”、“附带高压任务（如强行塞简历）”的结构，以确保最终输出符合平视的商业契约精神。
 
 【场景专属范例参考】
 (注：以下范例仅供语感参考，最终输出的语言请严格遵循上方“语言路径”的要求)
