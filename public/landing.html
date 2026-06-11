@@ -278,7 +278,7 @@
         }
 
         /* =========================================
-           Screen 2: Value Proposition & CTA
+           Screen 2: Value Proposition & CTA (核心字体放大重构区)
            ========================================= */
         .screen-2-wrapper {
             flex: 1;
@@ -290,7 +290,7 @@
         }
 
         .values-section {
-            max-width: 1100px;
+            max-width: 1200px; /* 稍微放宽以适应更大的字体 */
             width: 100%;
             margin: 0 auto;
         }
@@ -298,13 +298,13 @@
         .values-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 3rem;
+            gap: 4rem; /* 增大间距让大字体呼吸感更好 */
         }
 
         @media (max-width: 768px) {
             .values-grid {
                 grid-template-columns: 1fr;
-                gap: 2.5rem;
+                gap: 3rem;
             }
         }
 
@@ -314,28 +314,31 @@
         }
 
         .value-card h3 {
-            font-size: 1.1rem;
+            /* 【核心修改】自动适应屏幕缩放，最低1.4rem，最高2rem */
+            font-size: clamp(1.4rem, 2vw + 1rem, 2rem);
             font-weight: 600;
             color: #ffffff;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             position: relative;
-            padding-left: 0.75rem;
+            padding-left: 1rem;
         }
 
         .value-card h3::before {
             content: "";
             position: absolute;
             left: 0;
-            top: 25%;
-            height: 50%;
-            width: 2px;
+            top: 20%; /* 微调高度以适配更大的字体 */
+            height: 60%;
+            width: 3px; /* 稍微加粗金线 */
             background-color: #D4AF37;
+            border-radius: 2px;
         }
 
         .value-card p {
-            font-size: 0.92rem;
+            /* 【核心修改】自动适应屏幕缩放，最低1.05rem，最高1.4rem */
+            font-size: clamp(1.05rem, 1.2vw + 0.6rem, 1.4rem);
             color: #888888;
-            line-height: 1.6;
+            line-height: 1.8; /* 增大行高，大段文字更易读 */
         }
 
         .cta-section {
@@ -347,8 +350,11 @@
             background-color: transparent;
             color: #D4AF37;
             border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 1.2rem 2.8rem;
-            font-size: 1rem;
+            
+            /* 【核心修改】按钮内边距和字号也进行自适应缩放 */
+            padding: clamp(1.2rem, 2vw, 1.5rem) clamp(2.5rem, 4vw, 3.5rem);
+            font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.4rem);
+            
             font-weight: 600;
             letter-spacing: 2px;
             border-radius: 6px;
