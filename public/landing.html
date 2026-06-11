@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>talk4us.com | 沟通的本质，是重塑边界</title>
+    <script src="lang.js"></script>
     <style>
         /* =========================================
            极简主义黑白/暗金美学
@@ -16,7 +17,6 @@
         }
 
         html {
-            /* 开启强制滚动对齐，实现严格的“一屏一屏”体验 */
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
         }
@@ -44,12 +44,10 @@
             border-radius: 3px;
         }
 
-        /* 独立满屏容器 */
         .screen {
             min-height: 100vh;
             width: 100%;
             scroll-snap-align: start;
-            /* 滚动对齐锚点 */
             display: flex;
             flex-direction: column;
             position: relative;
@@ -67,7 +65,6 @@
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-            /* 保证导航栏高度不被压缩 */
         }
 
         .logo {
@@ -82,15 +79,36 @@
             color: #D4AF37;
         }
 
+        /* 新增语言切换按钮样式 */
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 4px;
+            outline: none;
+        }
+
+        .lang-btn:hover {
+            color: #D4AF37;
+        }
+
         .hero-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* 绝对垂直居中 */
             align-items: center;
             padding-bottom: 5vh;
-            /* 视觉重心微微上移 */
         }
 
         .hero {
@@ -124,7 +142,7 @@
         }
 
         /* =========================================
-           交互演示黑盒 (打字机特效容器)
+           交互演示黑盒
            ========================================= */
         .demo-container {
             width: 100%;
@@ -236,18 +254,10 @@
         }
 
         @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
-        /* 向下滚动提示 */
         .scroll-indicator {
             position: absolute;
             bottom: 2rem;
@@ -259,26 +269,13 @@
         }
 
         @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0) translateX(-50%);
-            }
-
-            40% {
-                transform: translateY(-10px) translateX(-50%);
-            }
-
-            60% {
-                transform: translateY(-5px) translateX(-50%);
-            }
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-10px) translateX(-50%); }
+            60% { transform: translateY(-5px) translateX(-50%); }
         }
 
         /* =========================================
-           Screen 2: Value Proposition & CTA (核心字体放大重构区)
+           Screen 2: Value Proposition & CTA
            ========================================= */
         .screen-2-wrapper {
             flex: 1;
@@ -290,7 +287,7 @@
         }
 
         .values-section {
-            max-width: 1200px; /* 稍微放宽以适应更大的字体 */
+            max-width: 1200px; 
             width: 100%;
             margin: 0 auto;
         }
@@ -298,7 +295,7 @@
         .values-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4rem; /* 增大间距让大字体呼吸感更好 */
+            gap: 4rem; 
         }
 
         @media (max-width: 768px) {
@@ -314,7 +311,6 @@
         }
 
         .value-card h3 {
-            /* 【核心修改】自动适应屏幕缩放，最低1.4rem，最高2rem */
             font-size: clamp(1.4rem, 2vw + 1rem, 2rem);
             font-weight: 600;
             color: #ffffff;
@@ -327,18 +323,17 @@
             content: "";
             position: absolute;
             left: 0;
-            top: 20%; /* 微调高度以适配更大的字体 */
+            top: 20%; 
             height: 60%;
-            width: 3px; /* 稍微加粗金线 */
+            width: 3px; 
             background-color: #D4AF37;
             border-radius: 2px;
         }
 
         .value-card p {
-            /* 【核心修改】自动适应屏幕缩放，最低1.05rem，最高1.4rem */
             font-size: clamp(1.05rem, 1.2vw + 0.6rem, 1.4rem);
             color: #888888;
-            line-height: 1.8; /* 增大行高，大段文字更易读 */
+            line-height: 1.8; 
         }
 
         .cta-section {
@@ -350,11 +345,8 @@
             background-color: transparent;
             color: #D4AF37;
             border: 1px solid rgba(212, 175, 55, 0.3);
-            
-            /* 【核心修改】按钮内边距和字号也进行自适应缩放 */
             padding: clamp(1.2rem, 2vw, 1.5rem) clamp(2.5rem, 4vw, 3.5rem);
             font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.4rem);
-            
             font-weight: 600;
             letter-spacing: 2px;
             border-radius: 6px;
@@ -382,7 +374,6 @@
             color: #444444;
             letter-spacing: 1px;
             margin-top: auto;
-            /* 推至第二屏最底部 */
         }
     </style>
 </head>
@@ -392,18 +383,21 @@
     <div class="screen">
         <header>
             <div class="logo">TALK<span>4us</span></div>
+            <div class="header-actions">
+                <button id="langToggleBtn" class="lang-btn">CN</button>
+            </div>
         </header>
 
         <div class="hero-wrapper">
             <section class="hero">
-                <h1>沟通的本质，是重塑边界。</h1>
-                <p class="subtitle">我们不翻译，我们重构职场博弈的筹码。专为跨国协作、向上管理与高难度商业沟通设计的 AI 沟通专家。</p>
+                <h1 data-i18n="landingHeroTitle">沟通的本质，是重塑边界。</h1>
+                <p class="subtitle" data-i18n="landingSubtitle">我们不翻译，我们重构职场博弈的筹码。专为跨国协作、向上管理与高难度商业沟通设计的 AI 沟通专家。</p>
 
                 <div class="demo-container">
                     <div class="demo-panel demo-left">
                         <div class="panel-header">
-                            <div class="panel-label label-red">● YOU TYPED</div>
-                            <div class="status-indicator" id="leftStatus">输入中...</div>
+                            <div class="panel-label label-red" data-i18n="youTypedLabel">● YOU TYPED</div>
+                            <div class="status-indicator" id="leftStatus" data-i18n="statusTyping">输入中...</div>
                         </div>
                         <div class="demo-text text-muted">
                             <span id="rawText"></span><span class="cursor" id="leftCursor"></span>
@@ -411,8 +405,8 @@
                     </div>
                     <div class="demo-panel demo-right">
                         <div class="panel-header">
-                            <div class="panel-label label-gold">✦ SUGGESTS</div>
-                            <div class="status-indicator" id="rightStatus">引擎重构中...</div>
+                            <div class="panel-label label-gold" data-i18n="suggestsLabel">✦ SUGGESTS</div>
+                            <div class="status-indicator" id="rightStatus" data-i18n="statusProcessing">引擎重构中...</div>
                         </div>
                         <div class="demo-text text-highlight">
                             <span id="refinedText"></span><span class="cursor" id="rightCursor"></span>
@@ -435,52 +429,102 @@
             <section class="values-section">
                 <div class="values-grid">
                     <div class="value-card">
-                        <h3>建设性直率</h3>
-                        <p>告别弱势的“I think”，使用地道职场表达，守住底线，对事不对人。</p>
+                        <h3 data-i18n="val1Title">建设性直率</h3>
+                        <p data-i18n="val1Desc">告别弱势的“I think”，使用地道职场表达，守住底线，对事不对人。</p>
                     </div>
                     <div class="value-card">
-                        <h3>低压体贴感</h3>
-                        <p>打破机械的句式断句，将语意自然串联，让沟通实现松弛感。</p>
+                        <h3 data-i18n="val2Title">低压体贴感</h3>
+                        <p data-i18n="val2Desc">打破机械的句式断句，将语意自然串联，让沟通实现松弛感。</p>
                     </div>
                     <div class="value-card">
-                        <h3>情绪价值重塑</h3>
-                        <p>抹除AI感，还原真实、克制且专业的表达，让每一次交流都具备质感。</p>
+                        <h3 data-i18n="val3Title">情绪价值重塑</h3>
+                        <p data-i18n="val3Desc">抹除AI感，还原真实、克制且专业的表达，让每一次交流都具备质感。</p>
                     </div>
                 </div>
             </section>
 
             <section class="cta-section">
-                <button class="cta-btn" onclick="enterApp()">开启你的第一次高情商对话</button>
+                <button class="cta-btn" onclick="enterApp()" data-i18n="landingCTA">开启你的第一次高情商对话</button>
             </section>
         </div>
 
-        <footer>
+        <footer data-i18n="landingFooter">
             &copy; 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.
         </footer>
     </div>
 
     <script>
-        // 【新增核心逻辑】：进入主应用，种下状态标记并跳转
+        // =========================================
+        // 1. 语言引擎与状态同步
+        // =========================================
+        const langToggleBtn = document.getElementById('langToggleBtn');
+        const langCycle = ['zh', 'en', 'jp'];
+        const langDisplayMap = { 'zh': 'CN', 'en': 'EN', 'jp': 'JP' };
+        
+        function getSystemLanguage() {
+            const sysLang = navigator.language || navigator.userLanguage || '';
+            const lowerLang = sysLang.toLowerCase();
+            if (lowerLang.startsWith('zh')) return 'zh';
+            if (lowerLang.startsWith('ja')) return 'jp'; 
+            return 'en'; 
+        }
+        
+        let currentLang = localStorage.getItem('talk4us_lang') || getSystemLanguage();
+        
+        function applyLanguage(lang) {
+            if (!i18nConfig || !i18nConfig[lang]) return;
+            const dict = i18nConfig[lang];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.textContent = dict[key];
+                }
+            });
+
+            langToggleBtn.textContent = langDisplayMap[lang];
+            localStorage.setItem('talk4us_lang', lang);
+        }
+
+        langToggleBtn.addEventListener('click', () => {
+            let currentIndex = langCycle.indexOf(currentLang);
+            currentIndex = (currentIndex + 1) % langCycle.length;
+            currentLang = langCycle[currentIndex];
+            applyLanguage(currentLang);
+        });
+
+        applyLanguage(currentLang);
+
+        // =========================================
+        // 2. 主机路由控制
+        // =========================================
         function enterApp() {
             localStorage.setItem('talk4us_visited', 'true');
+            // 跳转时，语言偏好已由上面的引擎写入 LocalStorage，主应用接管时会无缝衔接
             window.location.href = '/'; 
         }
 
+        // =========================================
+        // 3. 多语种打字机动画逻辑
+        // =========================================
         document.addEventListener('DOMContentLoaded', () => {
-            const dialogueCases = [
-                {
-                    raw: "你给的时间太短了，根本不可能完成。",
-                    refined: "This timeline feels tight. Can we revisit the dates?"
-                },
-                {
-                    raw: "我很抱歉，能不能求您通融一下，让我晚点交？",
-                    refined: "To ensure quality, would it be possible to submit by Friday?"
-                },
-                {
-                    raw: "我实在太忙了，这事你找别人弄吧。",
-                    refined: "I'm currently at capacity. Would you be open to redirecting this?"
-                }
-            ];
+            const multiLangCases = {
+                zh: [
+                    { raw: "你给的时间太短了，根本不可能完成。", refined: "This timeline feels tight. Can we revisit the dates?" },
+                    { raw: "我很抱歉，能不能求您通融一下，让我晚点交？", refined: "To ensure quality, would it be possible to submit by Friday?" },
+                    { raw: "我实在太忙了，这事你找别人弄吧。", refined: "I'm currently at capacity. Would you be open to redirecting this?" }
+                ],
+                en: [
+                    { raw: "Your deadline is too short, impossible to do.", refined: "This timeline feels tight. Can we revisit the dates?" },
+                    { raw: "I'm so sorry, can I please have an extension?", refined: "To ensure quality, would it be possible to submit by Friday?" },
+                    { raw: "I'm too busy, ask someone else.", refined: "I'm currently at capacity. Would you be open to redirecting this?" }
+                ],
+                jp: [
+                    { raw: "締め切りが短すぎます、絶対に無理です。", refined: "このスケジュールは厳しいように感じます。日程を再検討できますか？" },
+                    { raw: "本当に申し訳ありません、提出を遅らせてもらえませんか？", refined: "品質を確保するため、金曜日までの提出は可能でしょうか？" },
+                    { raw: "忙しすぎるので、他の人に頼んでください。", refined: "現在キャパシティを超えております。他の方へ依頼していただけますか？" }
+                ]
+            };
 
             const rawEl = document.getElementById('rawText');
             const refinedEl = document.getElementById('refinedText');
@@ -519,7 +563,9 @@
 
             async function runDemoLoop() {
                 while (true) {
-                    const currentCase = dialogueCases[currentCaseIndex];
+                    // 动态读取当前选中的语言字典阵列，支持在打字机循环中热切换语言
+                    const activeCases = multiLangCases[currentLang] || multiLangCases['en'];
+                    const currentCase = activeCases[currentCaseIndex % activeCases.length];
 
                     leftCursor.classList.add('active');
                     rightCursor.classList.remove('active');
@@ -543,8 +589,7 @@
                     await eraseText(rawEl, refinedEl);
                     rightCursor.classList.remove('active');
 
-                    currentCaseIndex = (currentCaseIndex + 1) % dialogueCases.length;
-
+                    currentCaseIndex++;
                     await new Promise(r => setTimeout(r, 500));
                 }
             }
@@ -553,7 +598,6 @@
         });
     </script>
 
-    <!-- Default Statcounter code for Talk4us http://talk4us.com -->
     <script type="text/javascript">
     var sc_project=13289815; 
     var sc_invisible=1; 
@@ -561,7 +605,6 @@
     </script>
     <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
     <noscript><div class="statcounter"><a title="Web AnalyticsMade Easy - Statcounter" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/13289815/0/55f285ba/1/" alt="Web Analytics Made Easy - Statcounter" referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
-    <!-- End of Statcounter Code -->
-</body>
+    </body>
 
 </html>

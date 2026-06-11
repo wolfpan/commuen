@@ -10,33 +10,29 @@
 
 /* 针对 Firefox 浏览器 */
 * {
-    scrollbar-width: thin; /* 启用纤细滚动条 */
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent; /* 滑块颜色 轨道颜色 */
+    scrollbar-width: thin; 
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent; 
 }
 
 /* 针对 Webkit 内核浏览器 (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-    width: 8px;  /* 竖向滚动条宽度 */
-    height: 8px; /* 横向滚动条高度（如果存在） */
+    width: 8px;  
+    height: 8px; 
 }
 
-/* 滚动条轨道 */
 ::-webkit-scrollbar-track {
-    background: transparent; /* 轨道完全透明，融入背景 */
+    background: transparent; 
 }
 
-/* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15); /* 默认呈现克制的半透明灰 */
-    border-radius: 10px; /* 圆角胶囊设计 */
-    /* 利用与文本框背景相近的边框色，形成内缩的视觉错觉，让滑块看起来更精致 */
+    background-color: rgba(255, 255, 255, 0.15); 
+    border-radius: 10px; 
     border: 2px solid transparent; 
     background-clip: padding-box;
 }
 
-/* 滑块悬停状态 */
 ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(212, 175, 55, 0.4); /* 鼠标悬停时，微微泛出主视觉的暗金色 */
+    background-color: rgba(212, 175, 55, 0.4); 
 }
 
 
@@ -74,6 +70,24 @@ body {
     background-color: #151816;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
+}
+
+/* 新增多语言按钮样式 */
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 4px;
+    outline: none;
+}
+
+.lang-btn:hover {
+    color: #D4AF37;
 }
 
 .workspace {
@@ -212,7 +226,6 @@ textarea::placeholder {
     line-height: 1.6;
 }
 
-/* 核心变动：新增智能路由标识徽章的样式 */
 .route-badge {
     display: inline-block;
     color: #D4AF37;
@@ -389,7 +402,6 @@ select option {
     color: #555555;
 }
 
-/* 访问密钥 (PIN) 遮罩样式 */
 .pin-overlay {
     position: fixed;
     top: 0;
@@ -472,10 +484,6 @@ select option {
     min-height: 18px;
 }
 
-/* =========================================
-   响应式布局：移动端全屏沉浸原生体验 (Native App Feel)
-   ========================================= */
-
 @media (max-width: 900px) {
     body {
         padding: 0;
@@ -509,7 +517,6 @@ select option {
     }
 
     .left-panel {
-        /* [修正] 增加底部 padding 到 3.2rem，为中间的悬浮重构按钮留出更多空间，防止遮挡文字 */
         padding: 1.2rem 1.2rem 3.2rem 1.2rem;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -521,7 +528,6 @@ select option {
     }
 
     .right-panel {
-        /* [修正] 增加顶部 padding 到 3.2rem，防止重构按钮遮挡 "$ SUGGESTS" 标题 */
         padding: 3.2rem 1.2rem 1.2rem 1.2rem;
         flex: 1; 
         min-height: 0;
@@ -568,14 +574,13 @@ select option {
         transform: translate(-50%, -50%);
         margin: 0;
         z-index: 10;
-        /* [修正] 移动端缩小按钮高度和宽度，避免侵占面板区 */
         width: 72px;
         height: 72px;
         border-radius: 12px;
     }
 
     #submitBtn .shortcut {
-        display: none; /* [修正] 移动端隐藏 (Cmd/Ctrl + Enter) 无用提示，释放垂直空间 */
+        display: none; 
     }
 
     .window-footer {
@@ -619,7 +624,6 @@ select option {
 } 
 
 
-/* 新增 Auth 组件样式 */
 .auth-field {
     width: 100%;
     background-color: #151816;
@@ -689,14 +693,11 @@ select option {
     color: #888;
 }
 
-/* 优化被禁止选择的下拉菜单选项样式 */
 select option:disabled {
     color: #444;
     background-color: #0f1110;
 }
-/* =========================================
-   文本框包装器与字数统计 (Input & Char Count)
-   ========================================= */
+
 .textarea-wrapper {
     flex: 1;
     display: flex;
@@ -706,7 +707,6 @@ select option:disabled {
     margin-bottom: 1rem;
 }
 
-/* 覆盖原有 textarea 样式，为其底部流出呼吸空间 */
 .textarea-wrapper textarea {
     flex: 1;
     width: 100%;
@@ -718,7 +718,7 @@ select option:disabled {
     resize: none;
     outline: none;
     margin-bottom: 0; 
-    padding-bottom: 1.5rem; /* 避免文字被右下角的统计数字遮挡 */
+    padding-bottom: 1.5rem; 
 }
 
 .char-count {
@@ -733,17 +733,15 @@ select option:disabled {
     transition: color 0.2s ease;
 }
 
-/* 触达字数上限时的视觉警示 */
 .char-count.limit-reached {
     color: #ff5f56; 
 }
 
-/* 修复移动端下 .textarea-wrapper 的滚动问题 */
 @media (max-width: 900px) {
     .textarea-wrapper {
         overflow-y: auto;
     }
     .textarea-wrapper textarea {
-        overflow-y: visible; /* 让 wrapper 接管滚动 */
+        overflow-y: visible; 
     }
 }

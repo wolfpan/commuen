@@ -12,64 +12,68 @@
     <title>Talk4us, 优雅沟通</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="lang.js"></script>
 </head>
 <body>
     <div id="authOverlay" class="pin-overlay hidden" style="display: none;">
         <div class="pin-box" style="width: 340px;">
-            <h2>SYSTEM AUTH</h2>
-            <p>登录解锁更多AI 模型</p>
-            <input type="email" id="emailInput" placeholder="电子邮箱" autocomplete="on" class="auth-field">
-            <input type="password" id="passwordInput" placeholder="密码" autocomplete="off" class="auth-field">
+            <h2 data-i18n="sysAuth">SYSTEM AUTH</h2>
+            <p data-i18n="loginUnlock">登录解锁更多AI 模型</p>
+            <input type="email" id="emailInput" placeholder="电子邮箱" data-i18n-placeholder="email" autocomplete="on" class="auth-field">
+            <input type="password" id="passwordInput" placeholder="密码" data-i18n-placeholder="pwd" autocomplete="off" class="auth-field">
             
             <div class="auth-btn-group">
-                <button id="loginBtn" class="auth-primary-btn">登录</button>
-                <button id="signupBtn" class="auth-secondary-btn">注册</button>
+                <button id="loginBtn" class="auth-primary-btn" data-i18n="login">登录</button>
+                <button id="signupBtn" class="auth-secondary-btn" data-i18n="signup">注册</button>
             </div>
             
-            <button id="guestBtn" class="auth-guest-link">暂不登录，直接体验 (仅限默认模型)</button>
+            <button id="guestBtn" class="auth-guest-link" data-i18n="guestMode">暂不登录，直接体验 (仅限默认模型)</button>
             <p id="authError" class="pin-error"></p>
         </div>
     </div>
 
     <div class="app-window">
         <div class="window-header">
-            <div class="window-title">Talk4us,优雅沟通</div>
-            <button id="logoutBtn" class="icon-btn" title="退出登录" style="position: absolute; right: 15px; display: none;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            </button>
+            <div class="window-title" data-i18n="appTitle">Talk4us, 优雅沟通</div>
+            <div class="header-actions" style="position: absolute; right: 15px; display: flex; align-items: center; gap: 12px;">
+                <button id="langToggleBtn" class="lang-btn">CN</button>
+                <button id="logoutBtn" class="icon-btn" title="退出登录" style="display: none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+            </div>
         </div>
 
         <div class="workspace">
             <div class="panel left-panel">
                 <div class="panel-header">
                     <div class="header-title">
-                        <span class="dot">●</span> YOU TYPED
+                        <span class="dot">●</span> <span data-i18n="youTyped">YOU TYPED</span>
                     </div>
                     <button id="pasteBtn" class="icon-btn" title="粘贴">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                     </button>
                 </div>
                 <div class="textarea-wrapper">
-                    <textarea id="userInput" placeholder="输入需重构的话语（支持多语言混合）..."></textarea>
+                    <textarea id="userInput" placeholder="输入需重构的话语（支持多语言混合）..." data-i18n-placeholder="placeholderText"></textarea>
                     <div id="charCount" class="char-count">0/500</div>
                 </div>  
                 
                 
                 <div class="panel-footer">
                     <div class="select-group">
-                        <span class="group-label">场景</span>
+                        <span class="group-label" data-i18n="scene">场景</span>
                             <select id="contextSelect">
-                                <option value="auto" selected>自动检测 (Auto)</option>
-                                <optgroup label="高压博弈场景">
-                                    <option value="advocacy">维权交涉</option>
-                                    <option value="upward">向上管理</option>
-                                    <option value="boundary">催促or拒绝</option>
-                                    <option value="cold_reach">弱连接增强</option>
+                                <option value="auto" selected data-i18n="auto">自动检测 (Auto)</option>
+                                <optgroup label="高压博弈场景" data-i18n-label="groupHighPressure">
+                                    <option value="advocacy" data-i18n="advocacy">维权交涉</option>
+                                    <option value="upward" data-i18n="upward">向上管理</option>
+                                    <option value="boundary" data-i18n="boundary">催促or拒绝</option>
+                                    <option value="cold_reach" data-i18n="coldReach">弱连接增强</option>
                                 </optgroup>
-                                <optgroup label="常规职业场景">
-                                    <option value="internal">内部协作</option>
-                                    <option value="business">商业沟通</option>
-                                    <option value="social">轻松社交</option>
+                                <optgroup label="常规职业场景" data-i18n-label="groupRoutine">
+                                    <option value="internal" data-i18n="internal">内部协作</option>
+                                    <option value="business" data-i18n="business">商业沟通</option>
+                                    <option value="social" data-i18n="social">轻松社交</option>
                                 </optgroup>
                             </select>
                     </div>
@@ -77,7 +81,7 @@
             </div>
 
             <button id="submitBtn">
-                重构
+                <span id="submitBtnText" data-i18n="btnSubmit">重构</span>
                 <span class="shortcut">(Cmd/Ctrl + Enter)</span>
             </button>
 
@@ -85,27 +89,27 @@
                 <div class="panel-header gold">
                     <div class="header-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        <span>SUGGESTS</span>
+                        <span data-i18n="suggests">SUGGESTS</span>
                     </div>
                     <button id="copyBtn" class="icon-btn" title="复制">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     </button>
                 </div>
                 <div id="outputContent" class="output-content">
-                    <p id="suggestionText" class="suggestion-text empty-state">等待输入内容...</p>
+                    <p id="suggestionText" class="suggestion-text empty-state" data-i18n="emptyState">等待输入内容...</p>
                     <div class="rationale-box">
                         <span class="icon">💡</span>
-                        <span id="rationaleText">AI 分析将在此处显示</span>
+                        <span id="rationaleText" data-i18n="rationale">AI 分析将在此处显示</span>
                     </div>
                 </div>
                 
                 <div class="panel-footer">
                     <div class="select-group">
-                        <span class="group-label">输出</span>
+                        <span class="group-label" data-i18n="output">输出</span>
                         <select id="outputLangSelect">
-                            <option value="zh" selected>中文</option>
-                            <option value="en">英文</option>
-                            <option value="jp">日语</option>
+                            <option value="zh" selected data-i18n="zhOut">中文</option>
+                            <option value="en" data-i18n="enOut">英文</option>
+                            <option value="jp" data-i18n="jpOut">日语</option>
                         </select>
                     </div>
                 </div>
@@ -114,27 +118,26 @@
 
         <div class="window-footer">
             <div class="select-group">
-                <span class="group-label">AI引擎</span>
+                <span class="group-label" data-i18n="aiEngine">AI引擎</span>
                 <select id="modelSelect">
                     <option value="glm" selected>GLM 4 flash</option>
-                    <option value="glm2" disabled>GLM 5.1 (需登录)</option>
-                    <option value="qwen" disabled>Qwen 3.5 flash (需登录)</option>
-                    <option value="qwen2" disabled>Qwen 3.6 flash (需登录)</option>
-                    <option value="deepseek" disabled>DeepSeek V4 flash (需登录)</option>
+                    <option value="glm2" disabled>GLM 5.1</option>
+                    <option value="qwen" disabled>Qwen 3.5 flash</option>
+                    <option value="qwen2" disabled>Qwen 3.6 flash</option>
+                    <option value="deepseek" disabled>DeepSeek V4 flash</option>
                 </select>
-                <button id="triggerLoginBtn" class="auth-guest-link" style="margin-left: 12px; font-size: 0.8rem;">
+                <button id="triggerLoginBtn" class="auth-guest-link" style="margin-left: 12px; font-size: 0.8rem;" data-i18n="loginForMore">
                     登录使用更多模型
                 </button>
             </div>
         </div>
     </div>
     
-    <div class="app-description">
+    <div class="app-description" data-i18n="appDesc">
         我们不翻译，只是帮你更专业、优雅地表达想法。
     </div>
 
     <script src="app.js"></script>
-    <!-- Default Statcounter code for Talk4us http://talk4us.com -->
     <script type="text/javascript">
     var sc_project=13289815; 
     var sc_invisible=1; 
@@ -142,6 +145,5 @@
     </script>
     <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
     <noscript><div class="statcounter"><a title="Web AnalyticsMade Easy - Statcounter" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/13289815/0/55f285ba/1/" alt="Web Analytics Made Easy - Statcounter" referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
-    <!-- End of Statcounter Code -->
-</body>
+    </body>
 </html>

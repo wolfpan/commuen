@@ -1,36 +1,21 @@
 // app.js
 document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
-    // 1. 初始化 Supabase 客户端
-    // =========================================
-    let supabaseClient;
-    try {
-        const configRes = await fetch('/api/config');
-        const config = await configRes.json();
-        
-        // 使用获取到的变量初始化
-        supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-    } catch (error) {
-        console.error("无法获取 Supabase 配置，请检查后端服务:", error);
-        return; // 如果获取失败，直接阻断后续执行
-    }
-
-    // =========================================
-    // 2. 基础 DOM 节点获取
+    // 1. 基础 DOM 节点获取 (必须前置以供后续引擎调用)
     // =========================================
     const userInput = document.getElementById('userInput');
-    const charCountEl = document.getElementById('charCount'); // 新增字数统计节点
+    const charCountEl = document.getElementById('charCount'); 
     const submitBtn = document.getElementById('submitBtn');
+    const submitBtnText = document.getElementById('submitBtnText');
     const suggestionText = document.getElementById('suggestionText');
     const rationaleText = document.getElementById('rationaleText');
     const pasteBtn = document.getElementById('pasteBtn');
     const copyBtn = document.getElementById('copyBtn');
     const modelSelect = document.getElementById('modelSelect');
     const triggerLoginBtn = document.getElementById('triggerLoginBtn');
+    const langToggleBtn = document.getElementById('langToggleBtn');
 
-    // =========================================
-    // 3. Auth 弹窗节点获取
-    // =========================================
+    // Auth 弹窗节点获取
     const authOverlay = document.getElementById('authOverlay');
     const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
@@ -40,15 +25,99 @@ document.addEventListener('DOMContentLoaded', async () => {
     const logoutBtn = document.getElementById('logoutBtn');
     const authError = document.getElementById('authError');
 
-    // 全局凭证与额度状态
+    // =========================================
+    // 2. 语言切换引擎 (i18n Engine)
+    // =========================================
+    const langCycle = ['zh', 'en', 'jp'];
+    const langDisplayMap = { 'zh': 'CN', 'en': 'EN', 'jp': 'JP' };
+    
+    // 智能侦测用户浏览器语言
+    function getSystemLanguage() {
+        const sysLang = navigator.language || navigator.userLanguage || '';
+        const lowerLang = sysLang.toLowerCase();
+        if (lowerLang.startsWith('zh')) return 'zh';
+        if (lowerLang.startsWith('ja')) return 'jp'; // 浏览器标准缩写是 ja
+        return 'en'; // 默认回落为英文
+    }
+    
+    // 优先级：本地缓存 > 浏览器系统语言 > 默认英文
+    let currentLang = localStorage.getItem('talk4us_lang') || getSystemLanguage();
+    
+    function applyLanguage(lang) {
+        if (!i18nConfig || !i18nConfig[lang]) return;
+        const dict = i18nConfig[lang];
+        
+        // 渲染常规文本内容
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) {
+                el.textContent = dict[key];
+            }
+        });
+
+        // 渲染输入框占位符
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (dict[key]) {
+                el.setAttribute('placeholder', dict[key]);
+            }
+        });
+
+        // 渲染 Select Group 的 Label 标签
+        document.querySelectorAll('[data-i18n-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-label');
+            if (dict[key]) {
+                el.setAttribute('label', dict[key]);
+            }
+        });
+
+        langToggleBtn.textContent = langDisplayMap[lang];
+        localStorage.setItem('talk4us_lang', lang);
+
+        // 如果模型下拉框中包含动态提示，需要根据语言刷新
+        updateModelOptionsAuthText(dict);
+    }
+
+    function updateModelOptionsAuthText(dict) {
+        const loginRequiredText = dict.loginRequiredSuffix || (currentLang === 'zh' ? ' (需登录)' : currentLang === 'en' ? ' (Login Req)' : ' (要ログイン)');
+        Array.from(modelSelect.options).forEach(opt => {
+            if (opt.disabled && opt.value !== 'glm') {
+                opt.textContent = opt.textContent.replace(/\s*\(.*\)$/, '') + loginRequiredText;
+            }
+        });
+    }
+
+    langToggleBtn.addEventListener('click', () => {
+        let currentIndex = langCycle.indexOf(currentLang);
+        currentIndex = (currentIndex + 1) % langCycle.length;
+        currentLang = langCycle[currentIndex];
+        applyLanguage(currentLang);
+    });
+
+    // 初始化渲染当前语言
+    applyLanguage(currentLang);
+
+    // =========================================
+    // 3. 初始化 Supabase 客户端
+    // =========================================
+    let supabaseClient;
+    try {
+        const configRes = await fetch('/api/config');
+        const config = await configRes.json();
+        
+        supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+    } catch (error) {
+        console.error("无法获取 Supabase 配置，请检查后端服务:", error);
+        return; 
+    }
+
     let sessionToken = null;
-    let maxChars = 300; // 默认游客额度
+    let maxChars = 300; 
 
     // =========================================
     // 4. 字数引擎与输入拦截
     // =========================================
     
-    // 更新字数与 UI 状态
     function updateCharCount() {
         const currentLen = userInput.value.length;
         charCountEl.textContent = `${currentLen}/${maxChars}`;
@@ -60,7 +129,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 监听键盘输入
     userInput.addEventListener('input', () => {
         if (userInput.value.length > maxChars) {
             userInput.value = userInput.value.substring(0, maxChars);
@@ -68,7 +136,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateCharCount();
     });
 
-    // 绑定粘贴事件（含截断逻辑）
     pasteBtn.addEventListener('click', async () => {
         try {
             const text = await navigator.clipboard.readText();
@@ -84,47 +151,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 初始化渲染一次字数
     updateCharCount();
 
     // =========================================
-    // 5. Supabase 状态机驱动 (核心权限与额度控制)
+    // 5. Supabase 状态机驱动
     // =========================================
     supabaseClient.auth.onAuthStateChange((event, session) => {
         if (session) {
-            // ----- 登录状态 -----
             sessionToken = session.access_token;
-            maxChars = 500; // 提升输入额度
+            maxChars = 500; 
             logoutBtn.style.display = 'flex';
             hideAuthOverlay();
             
-            // 释放所有模型选择权
             Array.from(modelSelect.options).forEach(opt => {
                 opt.disabled = false;
-                opt.textContent = opt.textContent.replace(' (需登录)', '');
+                opt.textContent = opt.textContent.replace(/\s*\(.*\)$/, '');
             });
 
             if (triggerLoginBtn) triggerLoginBtn.style.display = 'none';
         } else {
-            // ----- 未登录/登出/游客状态 -----
             sessionToken = null;
-            maxChars = 300; // 降级额度
+            maxChars = 300; 
             logoutBtn.style.display = 'none';
             
-            // 如果登出时文本已超限，强制截断
             if (userInput.value.length > maxChars) {
                 userInput.value = userInput.value.substring(0, maxChars);
             }
             
-            // 强制将模型回滚至默认
             modelSelect.value = 'glm';
             
-            // 禁用高级模型
+            const loginReqStr = currentLang === 'zh' ? ' (需登录)' : currentLang === 'en' ? ' (Login Req)' : ' (要ログイン)';
             Array.from(modelSelect.options).forEach(opt => {
                 if (opt.value !== 'glm') {
                     opt.disabled = true;
-                    if (!opt.textContent.includes('(需登录)')) {
-                        opt.textContent += ' (需登录)';
+                    if (!opt.textContent.includes('Req') && !opt.textContent.includes('登录') && !opt.textContent.includes('ログイン')) {
+                        opt.textContent += loginReqStr;
                     }
                 }
             });
@@ -132,7 +193,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (triggerLoginBtn) triggerLoginBtn.style.display = 'inline-block';
         }
         
-        // 状态变更后刷新字数 UI
         updateCharCount();
     });
 
@@ -147,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loginBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
-        if (!email || !password) return showAuthError('请输入邮箱和密码');
+        if (!email || !password) return showAuthError(currentLang === 'zh' ? '请输入邮箱和密码' : 'Email/Password required');
 
         toggleAuthLoading(true);
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -159,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     signupBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
-        if (!email || !password) return showAuthError('请输入邮箱和密码');
+        if (!email || !password) return showAuthError(currentLang === 'zh' ? '请输入邮箱和密码' : 'Email/Password required');
 
         toggleAuthLoading(true);
         const { error } = await supabaseClient.auth.signUp({ email, password });
@@ -167,7 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (error) {
             showAuthError(error.message);
         } else {
-            showAuthError('注册成功！请查收验证邮件（或直接点击登录）。');
+            showAuthError(currentLang === 'zh' ? '注册成功！请查收验证邮件。' : 'Success! Check your email.');
         }
         toggleAuthLoading(false);
     });
@@ -185,7 +245,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === 'Enter') loginBtn.click();
     });
 
-    // Auth UI 辅助
     function showAuthError(msg) {
         authError.textContent = msg;
         setTimeout(() => authError.textContent = '', 4000);
@@ -196,7 +255,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         signupBtn.disabled = isLoading;
         emailInput.disabled = isLoading;
         passwordInput.disabled = isLoading;
-        loginBtn.textContent = isLoading ? '验证中...' : '登录';
+        const loadingText = currentLang === 'zh' ? '验证中...' : currentLang === 'en' ? 'Verifying...' : '認証中...';
+        const loginText = i18nConfig[currentLang].login;
+        loginBtn.textContent = isLoading ? loadingText : loginText;
     }
 
     function hideAuthOverlay() {
@@ -221,7 +282,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     copyBtn.addEventListener('click', async () => {
         const textToCopy = suggestionText.textContent;
-        if (!textToCopy || textToCopy === '等待输入内容...' || suggestionText.classList.contains('empty-state')) {
+        const emptyStateText = i18nConfig[currentLang].emptyState;
+        
+        if (!textToCopy || textToCopy === emptyStateText || suggestionText.classList.contains('empty-state')) {
             return;
         }
         
@@ -259,14 +322,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         submitBtn.disabled = true;
         submitBtn.classList.add('loading');
+        
+        const loadingStr = currentLang === 'zh' ? '重构中' : currentLang === 'en' ? 'Processing' : '再構成中';
         submitBtn.innerHTML = `
             <div class="spinner"></div>
-            重构中
+            ${loadingStr}
         `;
         
-        suggestionText.textContent = `引擎 (${modelChoice}) 正在分析语境...`;
+        const analyzingStr = currentLang === 'zh' ? `引擎 (${modelChoice}) 正在分析语境...` : `Engine (${modelChoice}) analyzing context...`;
+        const rationaleStr = currentLang === 'zh' ? '推演最佳重构策略中...' : 'Formulating best response strategy...';
+
+        suggestionText.textContent = analyzingStr;
         suggestionText.classList.remove('empty-state');
-        rationaleText.textContent = '推演最佳重构策略中...';
+        rationaleText.textContent = rationaleStr;
 
         try {
             const headers = { 'Content-Type': 'application/json' };
@@ -285,20 +353,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 })
             });
 
-            // 后端拦截触发（含字数超限、权限不足等情况）
-            // 拦截所有非 200 请求，优先提取后端自定义的详细错误说明
             if (!response.ok) {
-                if (response.status === 401) showAuthOverlay(); // 401 专属处理：弹登录框
+                if (response.status === 401) showAuthOverlay(); 
                 
-                let errorMessage = '网络请求失败，请稍后再试。';
+                let errorMessage = currentLang === 'zh' ? '网络请求失败，请稍后再试。' : 'Network request failed. Please try again.';
                 try {
                     const errData = await response.json();
                     if (errData.error) {
-                        errorMessage = errData.error; // 成功提取 429 或 400 的后端报错提示
+                        errorMessage = errData.error; 
                     }
-                } catch (parseError) {
-                    // 兜底：如果后端崩溃没有返回 JSON，保持默认报错以免前端卡死
-                }
+                } catch (parseError) {}
                 
                 throw new Error(errorMessage);
             }
@@ -308,19 +372,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             suggestionText.textContent = data.suggestion;
             
             if (contextType === 'auto' && data.detectedContext) {
-                rationaleText.innerHTML = `<span class="route-badge">智能路由: ${data.detectedContext}</span> ${data.rationale}`;
+                const routeBadgeStr = currentLang === 'zh' ? '智能路由' : currentLang === 'en' ? 'Auto-Route' : '自動ルーティング';
+                rationaleText.innerHTML = `<span class="route-badge">${routeBadgeStr}: ${data.detectedContext}</span> ${data.rationale}`;
             } else {
                 rationaleText.textContent = data.rationale;
             }
             
         } catch (error) {
             console.error(error);
-            suggestionText.textContent = '重构失败。';
-            rationaleText.textContent = `错误：${error.message}`;
+            suggestionText.textContent = currentLang === 'zh' ? '重构失败。' : 'Reframing failed.';
+            rationaleText.textContent = `Error: ${error.message}`;
         } finally {
             submitBtn.disabled = false;
             submitBtn.classList.remove('loading');
-            submitBtn.innerHTML = `重构 <span class="shortcut">(Cmd/Ctrl + Enter)</span>`;
+            const submitText = i18nConfig[currentLang].btnSubmit;
+            submitBtn.innerHTML = `<span id="submitBtnText" data-i18n="btnSubmit">${submitText}</span> <span class="shortcut">(Cmd/Ctrl + Enter)</span>`;
         }
     }
 });
