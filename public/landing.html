@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>talk9c.com | 沟通的本质，是重塑边界</title>
+    <title>talk4us.com | 沟通的本质，是重塑边界</title>
     <style>
         /* =========================================
            极简主义黑白/暗金美学
@@ -383,10 +383,9 @@
 
 <body>
 
-    <!-- 第一屏：Hero & 交互黑盒 -->
     <div class="screen">
         <header>
-            <div class="logo">TALK9<span>C</span></div>
+            <div class="logo">TALK<span>4us</span></div>
         </header>
 
         <div class="hero-wrapper">
@@ -425,7 +424,6 @@
         </div>
     </div>
 
-    <!-- 第二屏：价值主张 & CTA -->
     <div class="screen">
         <div class="screen-2-wrapper">
             <section class="values-section">
@@ -446,16 +444,22 @@
             </section>
 
             <section class="cta-section">
-                <button class="cta-btn" onclick="location.href='#'">开启你的第一次商业对话</button>
+                <button class="cta-btn" onclick="enterApp()">开启你的第一次商业对话</button>
             </section>
         </div>
 
         <footer>
-            &copy; 2026 TALK9C.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.
+            &copy; 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.
         </footer>
     </div>
 
     <script>
+        // 【新增核心逻辑】：进入主应用，种下状态标记并跳转
+        function enterApp() {
+            localStorage.setItem('talk4us_visited', 'true');
+            window.location.href = '/'; 
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const dialogueCases = [
                 {

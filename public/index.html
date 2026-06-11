@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+    <script>
+        if (!localStorage.getItem('talk4us_visited')) {
+            window.location.replace('/landing.html');
+        }
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>优雅沟通 | MVP</title>
