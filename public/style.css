@@ -387,21 +387,6 @@ select option {
     font-size: 0.8rem;
 }
 
-.app-description {
-    font-size: 0.85rem;
-    color: #3a3d3b;
-    max-width: 620px;
-    line-height: 1.6;
-    text-align: center;
-    letter-spacing: 0.5px;
-    padding: 0 1rem;
-    transition: color 0.3s;
-}
-
-.app-description:hover {
-    color: #555555;
-}
-
 .pin-overlay {
     position: fixed;
     top: 0;
@@ -754,7 +739,7 @@ select option:disabled {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     color: #444444;
     letter-spacing: 1px;
     margin-top: -0.5rem;
