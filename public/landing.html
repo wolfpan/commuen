@@ -375,6 +375,23 @@
             letter-spacing: 1px;
             margin-top: auto;
         }
+        
+        .privacy-notice {
+            margin-top: 7.5rem;
+            font-size: 1.25rem;
+            color: #555555;
+            letter-spacing: 1.25px;
+            font-weight: 400;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            transition: color 0.3s ease;
+        }
+
+        .privacy-notice:hover {
+            color: #888888;
+        }
     </style>
 </head>
 
@@ -445,6 +462,9 @@
 
             <section class="cta-section">
                 <button class="cta-btn" onclick="enterApp()" data-i18n="landingCTA">开启你的第一次高情商对话</button>
+                <div class="privacy-notice" data-i18n="privacyNotice">
+                    免费、开源，我们不保存任何对话数据，确保隐私安全得到保障，可从Github下载全部项目代码。
+                </div>
             </section>
         </div>
 

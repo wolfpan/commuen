@@ -16,6 +16,7 @@ const i18nConfig = {
         val3Desc: "转为坦诚、克制的言语，让每次交流都有分寸感。",
         landingCTA: "开启你的第一次高情商对话",
         landingFooter: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
+        privacyNotice: "免费、开源，我们不保存任何对话数据，确保隐私安全得到保障，可从Github下载全部项目代码。",
 
         // --- 主应用 (App) ---
         appTitle: "Talk4us, 会聊",
@@ -49,7 +50,9 @@ const i18nConfig = {
         jpOut: "日语",
         aiEngine: "AI引擎",
         loginForMore: "登录使用更多模型",
-        appDesc: "我们不翻译，只是帮你更专业、优雅地表达想法。"
+        appDesc: "我们不翻译，只是帮你更专业、优雅地表达想法。",
+        appCopyright: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
+        githubLink: "GitHub 开源"
     },
     en: {
         // --- 引导页 (Landing) ---
@@ -67,7 +70,8 @@ const i18nConfig = {
         val3Desc: "Eliminate the synthetic 'AI tone'. Restore authentic, restrained, and professional phrasing for high-impact exchanges.",
         landingCTA: "Start Your High-Leverage Conversation",
         landingFooter: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
-
+        privacyNotice: "Free and open-source. We do not store any conversation data, ensuring your privacy is fully protected. You can download the entire project code from GitHub.",
+        
         // --- 主应用 (App) ---
         appTitle: "Talk4us, Elegant Communication",
         sysAuth: "SYSTEM AUTH",
@@ -100,7 +104,9 @@ const i18nConfig = {
         jpOut: "Japanese",
         aiEngine: "AI Engine",
         loginForMore: "Log in for more models",
-        appDesc: "We don't translate. We restructure your leverage for professional communication."
+        appDesc: "We don't translate. We restructure your leverage for professional communication.",
+        appCopyright: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
+        githubLink: "Open Source on GitHub"
     },
     jp: {
         // --- 引导页 (Landing) ---
@@ -118,8 +124,8 @@ const i18nConfig = {
         val3Desc: "AI感を排除し、リアルで抑制の効いたプロフェッショナルな表現に還元。すべての交流に説得力を持たせます。",
         landingCTA: "高EQな対話を始める",
         landingFooter: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
-
-        // --- 主应用 (App) ---
+        privacyNotice: "無料かつオープンソース。会話データは一切保存せず、プライバシーを完全に保護します。GitHubからすべてのプロジェクトコードをダウンロードできます。",
+                // --- 主应用 (App) ---
         appTitle: "Talk4us, 洗練されたコミュニケーション",
         sysAuth: "SYSTEM AUTH",
         loginUnlock: "ログインして高度なAIモデルをロック解除",
@@ -151,6 +157,9 @@ const i18nConfig = {
         jpOut: "日本語",
         aiEngine: "AIエンジン",
         loginForMore: "ログインしてさらにモデルを使用",
-        appDesc: "翻訳ではありません。あなたの考えをより専門的で洗練された表現に再構築します。"
+        appDesc: "翻訳ではありません。あなたの考えをより専門的で洗練された表現に再構築します。",
+        appCopyright: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
+        githubLink: "GitHubでオープンソース化"
+
     }
 };
