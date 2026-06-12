@@ -52,7 +52,7 @@ const i18nConfig = {
         loginForMore: "登录使用更多模型",
         appDesc: "我们不翻译，只是帮你更专业、优雅地表达想法。",
         appCopyright: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
-        githubLink: "GitHub 开源"
+        githubLink: "GitHub"
     },
     en: {
         // --- 引导页 (Landing) ---
@@ -106,7 +106,7 @@ const i18nConfig = {
         loginForMore: "Log in for more models",
         appDesc: "We don't translate. We restructure your leverage for professional communication.",
         appCopyright: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
-        githubLink: "Open Source on GitHub"
+        githubLink: "GitHub"
     },
     jp: {
         // --- 引导页 (Landing) ---
@@ -159,7 +159,7 @@ const i18nConfig = {
         loginForMore: "ログインしてさらにモデルを使用",
         appDesc: "翻訳ではありません。あなたの考えをより専門的で洗練された表現に再構築します。",
         appCopyright: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
-        githubLink: "GitHubでオープンソース化"
+        githubLink: "GitHub"
 
     }
 };
