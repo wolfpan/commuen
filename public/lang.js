@@ -2,23 +2,23 @@
 const i18nConfig = {
     zh: {
         // --- 引导页 (Landing) ---
-        landingHeroTitle: "沟通的本质，是重塑边界。",
-        landingSubtitle: "我们不翻译，我们重构职场博弈的筹码。专为跨国协作、向上管理与高难度商业沟通设计的 AI 沟通专家。",
+        landingHeroTitle: "不知怎么开口？就用会聊",
+        landingSubtitle: " 我们不止翻译，还能帮助你把话说得体。专为跨国交流、职场协作和商业沟通设计的 AI 翻译助手。",
         youTypedLabel: "● YOU TYPED",
         suggestsLabel: "✦ SUGGESTS",
         statusTyping: "输入中...",
         statusProcessing: "引擎重构中...",
-        val1Title: "建设性直率",
-        val1Desc: "告别弱势的“I think”，使用地道职场表达，守住底线，对事不对人。",
-        val2Title: "低压体贴感",
-        val2Desc: "打破机械的句式断句，将语意自然串联，让沟通实现松弛感。",
-        val3Title: "情绪价值重塑",
-        val3Desc: "抹除AI感，还原真实、克制且专业的表达，让每一次交流都具备质感。",
+        val1Title: "建设性",
+        val1Desc: "告别弱势的“I think”，用地道表达，守住底线。",
+        val2Title: "低压感",
+        val2Desc: "拒绝命令式短句，避免攻击性，轻松交流，促成合作。",
+        val3Title: "情绪价值",
+        val3Desc: "转为坦诚、克制的言语，让每次交流都有分寸感。",
         landingCTA: "开启你的第一次高情商对话",
         landingFooter: "© 2026 talk4us.COM. ALL RIGHTS RESERVED. SELF-ITERATION & ESSENCE.",
 
         // --- 主应用 (App) ---
-        appTitle: "Talk4us, 优雅沟通",
+        appTitle: "Talk4us, 会聊",
         sysAuth: "SYSTEM AUTH",
         loginUnlock: "登录解锁更多AI 模型",
         email: "电子邮箱",
