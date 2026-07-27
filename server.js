@@ -33,21 +33,22 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4-flash-250414'
     },
-    'glm2': {
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        key: process.env.ALI_API_KEY,
-        model: 'glm-5.1' 
-    },
-    'qwen': {
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        key: process.env.ALI_API_KEY,
-        model: 'qwen3.5-flash' 
-    },
-    'qwen2': {
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        key: process.env.ALI_API_KEY,
-        model: 'qwen3.6-flash-2026-04-16' 
-    },
+    // [暂时不用] 以下模型已备注
+    // 'glm2': {
+    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    //     key: process.env.ALI_API_KEY,
+    //     model: 'glm-5.1' 
+    // },
+    // 'qwen': {
+    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    //     key: process.env.ALI_API_KEY,
+    //     model: 'qwen3.5-flash' 
+    // },
+    // 'qwen2': {
+    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    //     key: process.env.ALI_API_KEY,
+    //     model: 'qwen3.6-flash-2026-04-16' 
+    // },
     'deepseek': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
