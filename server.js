@@ -33,11 +33,12 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4-flash-250414'
     },
-    'qwen': {
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        key: process.env.ALI_API_KEY,
-        model: 'qwen3.8-flash'
-    },
+    // [暂时不用] 百炼 API Key 失效，已备注
+    // 'qwen': {
+    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    //     key: process.env.ALI_API_KEY,
+    //     model: 'qwen3.8-flash'
+    // },
     'deepseek': {
         url: 'https://api.deepseek.com/chat/completions',
         key: process.env.DS_API_KEY,
