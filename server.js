@@ -258,13 +258,34 @@ ${jsonFormatInstruction}`;
         temperature: 0.7 
     };
 
-    try {
-        const response = await axios.post(config.url, payload, {
-            headers: {
-                'Authorization': `Bearer ${config.key}`,
-                'Content-Type': 'application/json'
+    // 带重试的模型调用：免费模型高峰期可能返回 1305（过载）/ 429（限流），自动退避重试
+    const callModelWithRetry = async (retries = 2, delayMs = 1500) => {
+        let lastError;
+        for (let attempt = 0; attempt <= retries; attempt++) {
+            try {
+                return await axios.post(config.url, payload, {
+                    headers: {
+                        'Authorization': `Bearer ${config.key}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (err) {
+                lastError = err;
+                const errCode = err.response && err.response.data && err.response.data.error && err.response.data.error.code;
+                const isTransient = errCode === '1305' || (err.response && err.response.status === 429);
+                if (isTransient && attempt < retries) {
+                    console.warn(`[${config.model}] 触发限流(${errCode || err.response.status})，${delayMs * (attempt + 1)}ms 后第 ${attempt + 1} 次重试...`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs * (attempt + 1)));
+                    continue;
+                }
+                throw err;
             }
-        });
+        }
+        throw lastError;
+    };
+
+    try {
+        const response = await callModelWithRetry();
 
         const resultText = response.data.choices[0].message.content;
         const cleanJsonText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
