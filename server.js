@@ -33,25 +33,14 @@ const MODEL_CONFIGS = {
         key: process.env.GLM_API_KEY,
         model: 'glm-4.7-flash'
     },
-    // [暂时不用] 以下模型已备注
-    // 'glm2': {
-    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-    //     key: process.env.ALI_API_KEY,
-    //     model: 'glm-5.1' 
-    // },
-    // 'qwen': {
-    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-    //     key: process.env.ALI_API_KEY,
-    //     model: 'qwen3.5-flash' 
-    // },
-    // 'qwen2': {
-    //     url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-    //     key: process.env.ALI_API_KEY,
-    //     model: 'qwen3.6-flash-2026-04-16' 
-    // },
-    'deepseek': {
+    'qwen': {
         url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         key: process.env.ALI_API_KEY,
+        model: 'qwen3.8-flash'
+    },
+    'deepseek': {
+        url: 'https://api.deepseek.com/chat/completions',
+        key: process.env.DS_API_KEY,
         model: 'deepseek-v4-flash' 
     }
 };
