@@ -31,7 +31,7 @@ const MODEL_CONFIGS = {
     'glm': {
         url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
         key: process.env.GLM_API_KEY,
-        model: 'glm-4-flash-250414'
+        model: 'glm-4.7-flash'
     },
     // [暂时不用] 以下模型已备注
     // 'glm2': {
