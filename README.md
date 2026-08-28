@@ -79,7 +79,7 @@ pm2 start server.js --name "talk4us"
 ## 使用指南 (Usage)
 
 1. **访问与鉴权:**
-* 访问网站（如 [talk4us.com](https://www.google.com/url?sa=E&source=gmail&q=https://talk4us.com)），可通过“游客模式”直接体验基础重构功能（默认调用 GLM-4.7-Flash）。
+* 访问网站（如 [talk4us.com](https://www.google.com/url?sa=E&source=gmail&q=https://talk4us.com)），可通过“游客模式”直接体验基础重构功能（默认调用 GLM-4-Flash）。
 * 点击“登录”注册账户，即可解锁包括 DeepSeek-V4-Flash、Qwen-3.6-Flash 在内的高级引擎及更高的字符上限。
 
 
